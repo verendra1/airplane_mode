@@ -1,5 +1,6 @@
 {
  "actions": [],
+ "allow_import": 1,
  "allow_rename": 1,
  "autoname": "field:marsha",
  "creation": "2023-10-10 17:35:52.996594",
@@ -52,9 +53,10 @@
   },
   {
    "fieldname": "cluster",
-   "fieldtype": "Data",
+   "fieldtype": "Link",
    "in_list_view": 1,
-   "label": "Cluster"
+   "label": "Cluster",
+   "options": "Cluster Details"
   },
   {
    "fieldname": "column_break_a06m9",
@@ -80,7 +82,7 @@
  "hide_toolbar": 1,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-10-11 11:27:49.526727",
+ "modified": "2023-10-13 13:10:57.044639",
  "modified_by": "Administrator",
  "module": "Revenue Management",
  "name": "Marsha Details",
@@ -92,10 +94,12 @@
    "delete": 1,
    "email": 1,
    "export": 1,
+   "import": 1,
    "print": 1,
    "read": 1,
    "report": 1,
    "role": "System Manager",
+   "select": 1,
    "share": 1,
    "write": 1
   }

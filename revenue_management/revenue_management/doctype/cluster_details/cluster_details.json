@@ -1,5 +1,6 @@
 {
  "actions": [],
+ "allow_import": 1,
  "allow_rename": 1,
  "autoname": "field:cluster_name",
  "creation": "2023-10-11 17:55:46.256773",
@@ -20,7 +21,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-10-11 17:58:20.395533",
+ "modified": "2023-10-13 14:11:03.217553",
  "modified_by": "Administrator",
  "module": "Revenue Management",
  "name": "Cluster Details",

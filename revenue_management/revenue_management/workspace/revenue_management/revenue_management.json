@@ -11,8 +11,48 @@
  "idx": 0,
  "is_hidden": 0,
  "label": "Revenue Management",
- "links": [],
- "modified": "2023-10-11 11:03:53.297496",
+ "links": [
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Menu Links",
+   "link_count": 0,
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Property List",
+   "link_count": 0,
+   "link_to": "Marsha Details",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "RMRS Deployment",
+   "link_count": 0,
+   "link_to": "RMRS Deployment",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Employee List",
+   "link_count": 0,
+   "link_to": "Employees",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  }
+ ],
+ "modified": "2023-10-13 15:52:26.119026",
  "modified_by": "Administrator",
  "module": "Revenue Management",
  "name": "Revenue Management",
@@ -21,7 +61,11 @@
  "parent_page": "",
  "public": 1,
  "quick_lists": [],
- "roles": [],
+ "roles": [
+  {
+   "role": "System Manager"
+  }
+ ],
  "sequence_id": 1.0,
  "shortcuts": [
   {

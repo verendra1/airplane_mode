@@ -9,15 +9,15 @@
   "cluster",
   "approver_details_section",
   "deployment_type",
-  "approve_order",
+  "marsha",
   "column_break_dcmji",
   "approver_types",
-  "marsha",
   "employee_details_section",
   "eid",
   "email",
   "column_break_rl2xp",
-  "name1"
+  "name1",
+  "approve_order"
  ],
  "fields": [
   {
@@ -25,7 +25,8 @@
    "fieldtype": "Link",
    "in_list_view": 1,
    "label": "Marsha",
-   "options": "Marsha Details"
+   "options": "Marsha Details",
+   "read_only_depends_on": "eval:doc.deployment_type == \"Cluster\" && doc.approver_types == \"Approver\""
   },
   {
    "fetch_from": "eid.email",
@@ -96,7 +97,7 @@
  "hide_toolbar": 1,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-10-11 19:26:04.050743",
+ "modified": "2023-10-13 17:02:14.654567",
  "modified_by": "Administrator",
  "module": "Revenue Management",
  "name": "Approvers",
