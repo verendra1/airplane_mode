@@ -11,40 +11,25 @@
  "field_order": [
   "marsha",
   "property_name",
-  "cluster",
-  "region",
-  "city",
-  "column_break_a06m9",
-  "currency",
+  "status",
   "area",
-  "sub_region",
-  "country"
+  "adrs",
+  "city",
+  "cluster",
+  "currency",
+  "country",
+  "market_share_type",
+  "ms_comp_non_comp",
+  "team_type",
+  "billing_unit"
  ],
  "fields": [
   {
    "fieldname": "marsha",
    "fieldtype": "Data",
-   "label": "Marsha",
+   "label": "MARSHA",
    "reqd": 1,
    "unique": 1
-  },
-  {
-   "fieldname": "property_name",
-   "fieldtype": "Data",
-   "in_list_view": 1,
-   "label": "Property Name",
-   "reqd": 1
-  },
-  {
-   "fieldname": "currency",
-   "fieldtype": "Link",
-   "label": "Currency",
-   "options": "Currency"
-  },
-  {
-   "fieldname": "region",
-   "fieldtype": "Data",
-   "label": "Region"
   },
   {
    "fieldname": "city",
@@ -55,12 +40,14 @@
    "fieldname": "cluster",
    "fieldtype": "Link",
    "in_list_view": 1,
-   "label": "Cluster",
+   "label": "CLUSTER",
    "options": "Cluster Details"
   },
   {
-   "fieldname": "column_break_a06m9",
-   "fieldtype": "Column Break"
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "label": "Status",
+   "options": "\nOpen\nOld Entity\nNot Yet Opened\nDeflagged\nCancelled"
   },
   {
    "fieldname": "area",
@@ -68,21 +55,55 @@
    "label": "Area"
   },
   {
-   "fieldname": "sub_region",
-   "fieldtype": "Data",
-   "label": "Sub Region"
+   "fieldname": "adrs",
+   "fieldtype": "Small Text",
+   "label": "ADRS"
+  },
+  {
+   "fieldname": "currency",
+   "fieldtype": "Link",
+   "label": "Currency",
+   "options": "Currency"
   },
   {
    "fieldname": "country",
    "fieldtype": "Link",
    "label": "Country",
    "options": "Country"
+  },
+  {
+   "fieldname": "market_share_type",
+   "fieldtype": "Data",
+   "label": "Market Share Type"
+  },
+  {
+   "fieldname": "ms_comp_non_comp",
+   "fieldtype": "Data",
+   "label": "Market Share Comp"
+  },
+  {
+   "fieldname": "property_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Property Name on Tableau",
+   "reqd": 1
+  },
+  {
+   "fieldname": "team_type",
+   "fieldtype": "Select",
+   "label": "Team Type",
+   "options": "\nCluster\nNon-Cluster"
+  },
+  {
+   "fieldname": "billing_unit",
+   "fieldtype": "Data",
+   "label": "Billing Unit"
   }
  ],
  "hide_toolbar": 1,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-10-13 13:10:57.044639",
+ "modified": "2023-11-02 13:23:58.540494",
  "modified_by": "Administrator",
  "module": "Revenue Management",
  "name": "Marsha Details",

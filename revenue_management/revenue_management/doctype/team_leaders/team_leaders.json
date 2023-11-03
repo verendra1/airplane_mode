@@ -1,57 +1,61 @@
 {
  "actions": [],
  "allow_rename": 1,
- "autoname": "field:person_user_name",
- "creation": "2023-10-10 17:31:24.740520",
+ "autoname": "field:eid",
+ "creation": "2023-11-01 16:53:41.677557",
  "default_view": "List",
  "doctype": "DocType",
  "editable_grid": 1,
  "engine": "InnoDB",
  "field_order": [
-  "person_user_name",
-  "person_name",
-  "job_name",
-  "career_band",
-  "work_location_code"
+  "eid",
+  "email_id",
+  "revenue_leader",
+  "billing_unit",
+  "cluster",
+  "properties"
  ],
  "fields": [
   {
-   "fieldname": "person_user_name",
+   "fieldname": "eid",
    "fieldtype": "Data",
-   "in_list_view": 1,
-   "label": "Person User Name",
-   "reqd": 1,
+   "label": "EID",
    "unique": 1
   },
   {
-   "fieldname": "person_name",
+   "fieldname": "email_id",
    "fieldtype": "Data",
-   "label": "Person Name"
+   "label": "Email Id"
   },
   {
-   "fieldname": "job_name",
+   "fieldname": "revenue_leader",
    "fieldtype": "Data",
-   "label": "Job Name"
+   "label": "Revenue Leader"
   },
   {
-   "fieldname": "career_band",
+   "fieldname": "billing_unit",
    "fieldtype": "Data",
-   "label": "Career Band"
+   "label": "Billing Unit"
   },
   {
-   "fieldname": "work_location_code",
+   "fieldname": "properties",
+   "fieldtype": "Table",
+   "label": "Properties",
+   "options": "Team Leader Properties"
+  },
+  {
+   "fieldname": "cluster",
    "fieldtype": "Link",
-   "label": "Work Location Code",
-   "options": "Marsha Details"
+   "label": "Cluster",
+   "options": "Cluster Details"
   }
  ],
- "hide_toolbar": 1,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-11-02 12:46:27.685927",
+ "modified": "2023-11-02 16:27:58.403926",
  "modified_by": "Administrator",
  "module": "Revenue Management",
- "name": "Employees",
+ "name": "Team Leaders",
  "naming_rule": "By fieldname",
  "owner": "Administrator",
  "permissions": [
