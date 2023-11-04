@@ -1,33 +1,23 @@
 {
  "actions": [],
  "allow_rename": 1,
- "autoname": "field:person_user_name",
+ "autoname": "field:eid",
  "creation": "2023-10-10 17:31:24.740520",
  "default_view": "List",
  "doctype": "DocType",
  "editable_grid": 1,
  "engine": "InnoDB",
  "field_order": [
-  "person_user_name",
-  "person_name",
+  "eid",
+  "first_name",
+  "last_name",
   "job_name",
+  "job_entry_date",
   "career_band",
-  "work_location_code"
+  "marsha",
+  "work_email_address"
  ],
  "fields": [
-  {
-   "fieldname": "person_user_name",
-   "fieldtype": "Data",
-   "in_list_view": 1,
-   "label": "Person User Name",
-   "reqd": 1,
-   "unique": 1
-  },
-  {
-   "fieldname": "person_name",
-   "fieldtype": "Data",
-   "label": "Person Name"
-  },
   {
    "fieldname": "job_name",
    "fieldtype": "Data",
@@ -39,16 +29,47 @@
    "label": "Career Band"
   },
   {
-   "fieldname": "work_location_code",
+   "fieldname": "job_entry_date",
+   "fieldtype": "Data",
+   "label": "Job Entry Date"
+  },
+  {
+   "fieldname": "work_email_address",
+   "fieldtype": "Data",
+   "label": "Work Email Address",
+   "reqd": 1
+  },
+  {
+   "fieldname": "first_name",
+   "fieldtype": "Data",
+   "label": "First Name",
+   "reqd": 1
+  },
+  {
+   "fieldname": "last_name",
+   "fieldtype": "Data",
+   "label": "Last Name"
+  },
+  {
+   "fieldname": "marsha",
    "fieldtype": "Link",
-   "label": "Work Location Code",
-   "options": "Marsha Details"
+   "label": "Marsha",
+   "options": "Marsha Details",
+   "reqd": 1
+  },
+  {
+   "fieldname": "eid",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "EID",
+   "reqd": 1,
+   "unique": 1
   }
  ],
  "hide_toolbar": 1,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-11-02 12:46:27.685927",
+ "modified": "2023-11-03 15:48:08.664842",
  "modified_by": "Administrator",
  "module": "Revenue Management",
  "name": "Employees",
@@ -64,6 +85,19 @@
    "read": 1,
    "report": 1,
    "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Team Lead",
+   "select": 1,
    "share": 1,
    "write": 1
   }

@@ -52,10 +52,10 @@ def import_properties_team_leaders(file=None):
                     if 'message' in response:
                         os.remove(masha_file_name)
                         file = response['message']['file_url']
-                        dataimport(file=file, import_type="Insert New Records",
+                        masha_import_data = dataimport(file=file, import_type="Insert New Records",
                                    reference_doctype="Marsha Details")
-                        if "success" in dataimport:
-                            return dataimport
+                        # if "success" in masha_import_data:
+                        #     return masha_import_data
                     else:
                         return {"success": False, "message": response}
 
@@ -78,8 +78,8 @@ def import_properties_team_leaders(file=None):
                         file = response['message']['file_url']
                         dataimport(file=file, import_type="Update Existing Records",
                                    reference_doctype="Marsha Details")
-                        if "success" in dataimport:
-                            return dataimport
+                        # if "success" in dataimport:
+                        #     return dataimport
                     else:
                         return {"success": False, "message": response}
 
@@ -117,10 +117,10 @@ def import_properties_team_leaders(file=None):
                     if 'message' in response:
                         os.remove(team_leader_file_name)
                         file = response['message']['file_url']
-                        dataimport(
+                        team_lead_data_import = dataimport(
                             file=file, import_type="Insert New Records", reference_doctype="Team Leaders")
-                        if "success" in dataimport:
-                            return dataimport
+                        # if "success" in team_lead_data_import:
+                        #     return team_lead_data_import
                     else:
                         return {"success": False, "message": response}
 
@@ -149,9 +149,9 @@ def import_properties_team_leaders(file=None):
                         os.remove(team_leader_file_name)
                         file = response['message']['file_url']
                         dataimport(
-                            file=file, import_type="Insert New Records", reference_doctype="Team Leaders")
-                        if "success" in dataimport:
-                            return dataimport
+                            file=file, import_type="Update Existing Records", reference_doctype="Team Leaders")
+                        # if "success" in dataimport:
+                        #     return dataimport
                     else:
                         return {"success": False, "message": response}
         return {"success": True, "message": "Data Imported"}

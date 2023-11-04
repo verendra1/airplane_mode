@@ -18,6 +18,7 @@ def dataimport(file=None, import_type=None, reference_doctype=None):
         frappe.db.commit()
         data_import = data.name
         start_import = form_start_import(data_import)
+        return {"success": True}
     except Exception as e:
         exc_type, exc_obj, exc_tb = sys.exc_info()
         frappe.log_error("dataimport", "line No:{}\n{}".format(
