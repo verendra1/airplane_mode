@@ -11,7 +11,6 @@
   "eid",
   "email_id",
   "revenue_leader",
-  "billing_unit",
   "cluster",
   "properties"
  ],
@@ -25,17 +24,14 @@
   {
    "fieldname": "email_id",
    "fieldtype": "Data",
+   "in_list_view": 1,
    "label": "Email Id"
   },
   {
    "fieldname": "revenue_leader",
    "fieldtype": "Data",
+   "in_list_view": 1,
    "label": "Revenue Leader"
-  },
-  {
-   "fieldname": "billing_unit",
-   "fieldtype": "Data",
-   "label": "Billing Unit"
   },
   {
    "fieldname": "properties",
@@ -46,13 +42,14 @@
   {
    "fieldname": "cluster",
    "fieldtype": "Link",
+   "in_list_view": 1,
    "label": "Cluster",
    "options": "Cluster Details"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-11-03 10:05:57.986448",
+ "modified": "2023-11-08 12:09:03.171145",
  "modified_by": "Administrator",
  "module": "Revenue Management",
  "name": "Team Leaders",
@@ -78,6 +75,19 @@
    "read": 1,
    "report": 1,
    "role": "Team Lead",
+   "select": 1,
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Admin",
    "select": 1,
    "share": 1,
    "write": 1

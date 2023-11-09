@@ -111,9 +111,9 @@ doc_events = {
     "RMRS Deployment": {
         "before_insert": "revenue_management.revenue_management.doctype.rmrs_deployment.rmrs_deployment.update_name_field"
     },
-    "Team Leaders": {
-        "after_insert": "revenue_management.revenue_management.doctype.team_leaders.team_leaders.create_team_leader_as_user"
-    }
+    # "Team Leaders": {
+    #     "after_insert": "revenue_management.revenue_management.doctype.team_leaders.team_leaders.create_team_leader_as_user"
+    # }
 
 }
 

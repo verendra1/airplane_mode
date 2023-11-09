@@ -15,7 +15,9 @@
   "job_entry_date",
   "career_band",
   "marsha",
-  "work_email_address"
+  "cluster",
+  "work_email_address",
+  "added_as_team_member"
  ],
  "fields": [
   {
@@ -30,7 +32,7 @@
   },
   {
    "fieldname": "job_entry_date",
-   "fieldtype": "Data",
+   "fieldtype": "Date",
    "label": "Job Entry Date"
   },
   {
@@ -64,12 +66,24 @@
    "label": "EID",
    "reqd": 1,
    "unique": 1
+  },
+  {
+   "fetch_from": "marsha.cluster",
+   "fieldname": "cluster",
+   "fieldtype": "Data",
+   "label": "Cluster"
+  },
+  {
+   "default": "0",
+   "fieldname": "added_as_team_member",
+   "fieldtype": "Check",
+   "label": "Added as Team Member"
   }
  ],
  "hide_toolbar": 1,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-11-03 15:48:08.664842",
+ "modified": "2023-11-08 16:42:58.029037",
  "modified_by": "Administrator",
  "module": "Revenue Management",
  "name": "Employees",
@@ -100,6 +114,29 @@
    "select": 1,
    "share": 1,
    "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Admin",
+   "select": 1,
+   "share": 1,
+   "write": 1
+  },
+  {
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Employee",
+   "select": 1,
+   "share": 1
   }
  ],
  "sort_field": "modified",

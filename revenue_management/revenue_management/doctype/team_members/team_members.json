@@ -1,0 +1,204 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2023-11-07 14:00:05.318848",
+ "default_view": "List",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "eid",
+  "current_role_type",
+  "team_start_date",
+  "role_effective_date",
+  "comments",
+  "column_break_yue0i",
+  "email_id",
+  "team_member",
+  "team_end_date",
+  "status",
+  "status_change_reason",
+  "other_details_section",
+  "career_band",
+  "program_role",
+  "billing_marsha",
+  "supporting_marsha",
+  "column_break_t5fpy",
+  "eligibility",
+  "title",
+  "team_roster"
+ ],
+ "fields": [
+  {
+   "fieldname": "eid",
+   "fieldtype": "Link",
+   "label": "EID",
+   "options": "Employees"
+  },
+  {
+   "fieldname": "current_role_type",
+   "fieldtype": "Select",
+   "label": "Current Role Type",
+   "options": "\nIndividual Contributor\nLeader"
+  },
+  {
+   "fieldname": "team_start_date",
+   "fieldtype": "Date",
+   "label": "Team Start Date"
+  },
+  {
+   "default": "Active",
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "label": "Status",
+   "options": "\nActive\nInactive"
+  },
+  {
+   "fieldname": "comments",
+   "fieldtype": "Small Text",
+   "label": "Comments"
+  },
+  {
+   "fieldname": "column_break_yue0i",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "team_member",
+   "fieldtype": "Data",
+   "label": "Team Member"
+  },
+  {
+   "fieldname": "role_effective_date",
+   "fieldtype": "Date",
+   "label": "Role Effective Date"
+  },
+  {
+   "fieldname": "team_end_date",
+   "fieldtype": "Date",
+   "label": "Team End Date"
+  },
+  {
+   "fieldname": "status_change_reason",
+   "fieldtype": "Small Text",
+   "label": "Status Change Reason"
+  },
+  {
+   "fieldname": "eligibility",
+   "fieldtype": "Select",
+   "label": "Eligibility",
+   "options": "\nBrilliant\nGolden Circle-Top Performer\nRMIP-Golden Circle-Top Performer"
+  },
+  {
+   "fieldname": "program_role",
+   "fieldtype": "Select",
+   "label": "Program Role",
+   "options": "\nIndividual Contributor\nLeader"
+  },
+  {
+   "fetch_from": "team_roster.billing_marsha",
+   "fieldname": "billing_marsha",
+   "fieldtype": "Data",
+   "label": "Billing Marsha"
+  },
+  {
+   "fieldname": "supporting_marsha",
+   "fieldtype": "Table",
+   "label": "Supporting Marsha",
+   "options": "Supporting Marsha"
+  },
+  {
+   "fieldname": "column_break_t5fpy",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "title",
+   "fieldtype": "Data",
+   "label": "Title"
+  },
+  {
+   "fieldname": "team_roster",
+   "fieldtype": "Link",
+   "label": "Team Roster",
+   "options": "Team Roster"
+  },
+  {
+   "fieldname": "other_details_section",
+   "fieldtype": "Section Break",
+   "label": "Other Details"
+  },
+  {
+   "fetch_from": "eid.career_band",
+   "fieldname": "career_band",
+   "fieldtype": "Data",
+   "label": "Career Band"
+  },
+  {
+   "fetch_from": "eid.work_email_address",
+   "fieldname": "email_id",
+   "fieldtype": "Data",
+   "label": "Email Id"
+  }
+ ],
+ "hide_toolbar": 1,
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2023-11-09 11:57:50.268701",
+ "modified_by": "Administrator",
+ "module": "Revenue Management",
+ "name": "Team Members",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Team Lead",
+   "select": 1,
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Admin",
+   "select": 1,
+   "share": 1,
+   "write": 1
+  },
+  {
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Employee",
+   "select": 1,
+   "share": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1
+}
