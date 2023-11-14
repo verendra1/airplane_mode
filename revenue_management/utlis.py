@@ -7,7 +7,6 @@ from frappe.utils.password import check_password
 
 def dataimport(file=None, import_type=None, reference_doctype=None):
     try:
-        print(import_type)
         doc = {
             "doctype": "Data Import",
             "reference_doctype": reference_doctype,
@@ -132,3 +131,15 @@ def send_mail_to_user(content, email_id, subject):
         frappe.log_error("create_user", "line No:{}\n{}".format(
             exc_tb.tb_lineno, traceback.format_exc()))
         return {"success": False, "error": str(e)}
+
+
+@frappe.whitelist(allow_guest=True)
+def goal_maintance(file):
+    from frappe.utils import cstr
+    import pandas as pd
+    site_name = cstr(frappe.local.site)
+    file_path = frappe.utils.get_bench_path() + "/sites/" + site_name + file
+    df = pd.read_excel(file_path)  
+    removed_unmaed_columns = df.loc[:, ~df.columns.str.contains('^Unnamed')]
+    removed_duplicate_columns = removed_unmaed_columns.loc[:, ~removed_unmaed_columns.columns.str.contains('.1')]
+    print(removed_duplicate_columns.to_string())

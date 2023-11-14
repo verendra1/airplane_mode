@@ -17,7 +17,8 @@
   "marsha",
   "cluster",
   "work_email_address",
-  "added_as_team_member"
+  "added_as_team_member",
+  "added_as_approver"
  ],
  "fields": [
   {
@@ -78,12 +79,18 @@
    "fieldname": "added_as_team_member",
    "fieldtype": "Check",
    "label": "Added as Team Member"
+  },
+  {
+   "default": "0",
+   "fieldname": "added_as_approver",
+   "fieldtype": "Check",
+   "label": "Added as Approver"
   }
  ],
  "hide_toolbar": 1,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-11-08 16:42:58.029037",
+ "modified": "2023-11-14 12:53:32.622100",
  "modified_by": "Administrator",
  "module": "Revenue Management",
  "name": "Employees",

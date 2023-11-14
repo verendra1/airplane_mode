@@ -6,30 +6,32 @@
  "editable_grid": 1,
  "engine": "InnoDB",
  "field_order": [
-  "cluster",
-  "approver_details_section",
   "deployment_type",
+  "approver_details_section",
+  "cluster",
   "marsha",
-  "column_break_dcmji",
   "approver_types",
+  "column_break_dcmji",
+  "property_name",
   "employee_details_section",
   "eid",
-  "email",
+  "first_name",
+  "approve_order",
   "column_break_rl2xp",
-  "name1",
-  "approve_order"
+  "email",
+  "last_name"
  ],
  "fields": [
   {
+   "depends_on": "eval:doc.deployment_type == \"Individual Property\"",
    "fieldname": "marsha",
    "fieldtype": "Link",
    "in_list_view": 1,
    "label": "Marsha",
-   "options": "Marsha Details",
-   "read_only_depends_on": "eval:doc.deployment_type == \"Cluster\" && doc.approver_types == \"Approver\""
+   "options": "Marsha Details"
   },
   {
-   "fetch_from": "eid.email",
+   "fetch_from": "eid.work_email_address",
    "fieldname": "email",
    "fieldtype": "Data",
    "in_list_view": 1,
@@ -44,13 +46,6 @@
    "options": "Employees"
   },
   {
-   "fetch_from": "eid.name1",
-   "fieldname": "name1",
-   "fieldtype": "Data",
-   "in_list_view": 1,
-   "label": "Name"
-  },
-  {
    "fieldname": "approve_order",
    "fieldtype": "Select",
    "in_list_view": 1,
@@ -62,10 +57,11 @@
    "fieldtype": "Column Break"
   },
   {
+   "depends_on": "eval:doc.deployment_type == \"Cluster\"",
    "fieldname": "cluster",
    "fieldtype": "Link",
    "label": "Cluster",
-   "options": "RMRS Deployment"
+   "options": "Cluster Details"
   },
   {
    "fieldname": "deployment_type",
@@ -92,12 +88,33 @@
   {
    "fieldname": "column_break_rl2xp",
    "fieldtype": "Column Break"
+  },
+  {
+   "fetch_from": "eid.last_name",
+   "fieldname": "last_name",
+   "fieldtype": "Data",
+   "label": "Last Name"
+  },
+  {
+   "fetch_from": "eid.first_name",
+   "fieldname": "first_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "First Name"
+  },
+  {
+   "depends_on": "eval:doc.deployment_type == \"Individual Property\"",
+   "fetch_from": "marsha.property_name",
+   "fieldname": "property_name",
+   "fieldtype": "Data",
+   "label": "Property Name",
+   "read_only_depends_on": "eval:doc.deployment_type == \"Cluster\" && doc.approver_types == \"Approver\""
   }
  ],
  "hide_toolbar": 1,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-10-13 17:02:14.654567",
+ "modified": "2023-11-14 15:21:43.487957",
  "modified_by": "Administrator",
  "module": "Revenue Management",
  "name": "Approvers",
@@ -112,6 +129,19 @@
    "read": 1,
    "report": 1,
    "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Team Lead",
+   "select": 1,
    "share": 1,
    "write": 1
   }
