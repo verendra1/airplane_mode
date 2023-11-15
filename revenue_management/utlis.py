@@ -1,3 +1,4 @@
+import datetime
 import frappe
 import traceback
 import requests
@@ -33,7 +34,7 @@ def upload_file_api(filename = None):
         if filename:
             files = {"file": open(filename, 'rb')}
             payload = {'is_private': 1, 'folder': 'Home'}
-            upload_qr_image = requests.post("http://"+"0.0.0.0:8000" + "/api/method/upload_file",
+            upload_qr_image = requests.post("https://rm.ezyinvoicing.com" + "/api/method/upload_file",
                                             files=files,
                                             data=payload, verify=False)
             response = upload_qr_image.json()
@@ -133,13 +134,20 @@ def send_mail_to_user(content, email_id, subject):
         return {"success": False, "error": str(e)}
 
 
-@frappe.whitelist(allow_guest=True)
-def goal_maintance(file):
-    from frappe.utils import cstr
-    import pandas as pd
-    site_name = cstr(frappe.local.site)
-    file_path = frappe.utils.get_bench_path() + "/sites/" + site_name + file
-    df = pd.read_excel(file_path)  
-    removed_unmaed_columns = df.loc[:, ~df.columns.str.contains('^Unnamed')]
-    removed_duplicate_columns = removed_unmaed_columns.loc[:, ~removed_unmaed_columns.columns.str.contains('.1')]
-    print(removed_duplicate_columns.to_string())
+def get_current_quarter_months():
+    try:
+        current_date = datetime.datetime.now()
+        current_year = str(current_date.year)
+        if 1 <= current_date.month <= 3:
+            return {"success": True , "quarter": ["January "+current_year, "February "+current_year, "March "+current_year]}
+        elif 4 <= current_date.month <= 6:
+            return {"success": True , "quarter": ["April "+current_year, "May "+current_year, "June "+current_year]}
+        elif 7 <= current_date.month <= 9:
+            return {"success": True , "quarter": ["July "+current_year, "August "+current_year, "September "+current_year]}
+        else:
+            return {"success": True , "quarter": ["October "+current_year, "November "+current_year, "December "+current_year]}
+    except Exception as e:
+        exc_type, exc_obj, exc_tb = sys.exc_info()
+        frappe.log_error("get_current_quarter_months", "line No:{}\n{}".format(
+            exc_tb.tb_lineno, traceback.format_exc()))
+        return {"success": False, "error": str(e)}

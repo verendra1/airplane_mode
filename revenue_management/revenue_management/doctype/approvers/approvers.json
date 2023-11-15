@@ -114,7 +114,7 @@
  "hide_toolbar": 1,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-11-14 15:21:43.487957",
+ "modified": "2023-11-15 12:49:31.249784",
  "modified_by": "Administrator",
  "module": "Revenue Management",
  "name": "Approvers",
@@ -141,6 +141,19 @@
    "read": 1,
    "report": 1,
    "role": "Team Lead",
+   "select": 1,
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Admin",
    "select": 1,
    "share": 1,
    "write": 1
