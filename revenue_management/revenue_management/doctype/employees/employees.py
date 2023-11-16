@@ -8,7 +8,7 @@ import traceback
 import pandas as pd
 from frappe.utils import cstr
 from frappe.model.document import Document
-from revenue_management.utlis import dataimport
+from revenue_management.utlis import dataimport, upload_file_api
 
 class Employees(Document):
 	pass
@@ -33,42 +33,22 @@ def import_employees(file=None):
 					"/public/files/Employees.csv"
 			if len(remove_existing_employee_list) > 0:
 				remove_existing_employee_list.to_csv(employee_file_name, sep=',', index=False)
-				files = {"file": open(employee_file_name, 'rb')}
-				payload = {'is_private': 1, 'folder': 'Home'}
-				upload_qr_image = requests.post("http://"+"0.0.0.0:8000" + "/api/method/upload_file",
-												files=files,
-												data=payload, verify=False)
-				response = upload_qr_image.json()
-				if 'message' in response:
-					os.remove(employee_file_name)
-					file = response['message']['file_url']
-					dataimport(file=file, import_type="Insert New Records",
-								reference_doctype="Employees")
-					# if "success" in dataimport:
-					#     return dataimport
-				else:
-					return {"success": False, "message": response}
+				file_upload = upload_file_api(filename=employee_file_name)
+				if not file_upload["success"]:
+					return file_upload
+				dataimport(file=file_upload["file"], import_type="Insert New Records",
+							reference_doctype="Employees")
 
 			existing_employee_list = excel_data_df[excel_data_df["EID"].isin(get_employee_list)]
 			if len(existing_employee_list) > 0:
 				existing_employee_list.rename(columns={"EID": "ID"}, inplace=True)
 				existing_employee_list.to_csv(employee_file_name, sep=',', index=False)
-				files = {"file": open(employee_file_name, 'rb')}
-				payload = {'is_private': 1, 'folder': 'Home'}
-				upload_qr_image = requests.post("http://"+"0.0.0.0:8000" + "/api/method/upload_file",
-												files=files,
-												data=payload, verify=False)
-				
-				response = upload_qr_image.json()
-				if 'message' in response:
-					os.remove(employee_file_name)
-					file = response['message']['file_url']
-					dataimport(file=file, import_type="Update Existing Records",
-								reference_doctype="Employees")
-					# if "success" in dataimport:
-					#     return dataimport
-				else:
-					return {"success": False, "message": response}
+				file_upload = upload_file_api(filename=employee_file_name)
+				if not file_upload["success"]:
+					return file_upload
+				dataimport(file=file_upload["file"], import_type="Update Existing Records",
+							reference_doctype="Employees")
+
 			return {"success": True, "message": "Data Imported"}
 		return {"success": False, "message": "file is empty"}
 	except Exception as e:
