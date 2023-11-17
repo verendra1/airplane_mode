@@ -33,8 +33,7 @@ def create_team(data):
                 eligibility = "RMIP-Golden Circle-Top Performer"
         if frappe.db.exists("Team Leaders", data["eid"]):
             team_leader_data = frappe.get_doc("Team Leaders", data["eid"])
-            team_leader_property_details = frappe.db.get_list(
-                "Team Leader Properties", filters={"parent": data["eid"]}, fields=["marsha"])
+            team_leader_property_details = frappe.db.get_list("Marsha Details", filters={"cluster": data["cluster"]}, fields=["marsha"])
             create_teamroster = create_team_roster(
                 {"cluster": team_leader_data.cluster})
             if not create_teamroster["success"]:

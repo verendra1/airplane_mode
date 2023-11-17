@@ -13,21 +13,21 @@
   "month",
   "amount",
   "approved_by",
-  "updated_by"
+  "updated_by",
+  "reason"
  ],
  "fields": [
   {
    "fieldname": "marsha",
-   "fieldtype": "Link",
+   "fieldtype": "Data",
    "label": "Marsha",
-   "options": "Marsha Details",
    "search_index": 1
   },
   {
    "fieldname": "category",
    "fieldtype": "Select",
    "label": "Category",
-   "options": "\nRevPAR\nCatering Rev\nAVAILRMS_TY\nRmRev\nTymktavail"
+   "options": "\nRevPAR\nCatering Rev\nAVAILRMS_TY\nRmRev\nRPI"
   },
   {
    "fieldname": "year",
@@ -41,7 +41,7 @@
   },
   {
    "fieldname": "amount",
-   "fieldtype": "Float",
+   "fieldtype": "Currency",
    "label": "Amount"
   },
   {
@@ -55,11 +55,16 @@
    "fieldtype": "Link",
    "label": "Updated By",
    "options": "User"
+  },
+  {
+   "fieldname": "reason",
+   "fieldtype": "Small Text",
+   "label": "Reason"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-11-16 10:10:36.470278",
+ "modified": "2023-11-16 18:01:54.781364",
  "modified_by": "Administrator",
  "module": "Revenue Management",
  "name": "Goals",
@@ -74,6 +79,19 @@
    "read": 1,
    "report": 1,
    "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Team Lead",
+   "select": 1,
    "share": 1,
    "write": 1
   }

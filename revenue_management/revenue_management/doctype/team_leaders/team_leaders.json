@@ -12,13 +12,16 @@
   "email_id",
   "revenue_leader",
   "cluster",
+  "job_name",
+  "status",
   "properties"
  ],
  "fields": [
   {
    "fieldname": "eid",
-   "fieldtype": "Data",
+   "fieldtype": "Link",
    "label": "EID",
+   "options": "Employees",
    "unique": 1
   },
   {
@@ -34,22 +37,35 @@
    "label": "Revenue Leader"
   },
   {
-   "fieldname": "properties",
-   "fieldtype": "Table",
-   "label": "Properties",
-   "options": "Team Leader Properties"
-  },
-  {
    "fieldname": "cluster",
    "fieldtype": "Link",
    "in_list_view": 1,
    "label": "Cluster",
    "options": "Cluster Details"
+  },
+  {
+   "fetch_from": "eid.job_name",
+   "fieldname": "job_name",
+   "fieldtype": "Data",
+   "label": "Job Name"
+  },
+  {
+   "default": "Active",
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "label": "Status",
+   "options": "\nActive\nInactive"
+  },
+  {
+   "fieldname": "properties",
+   "fieldtype": "Table",
+   "label": "Properties",
+   "options": "Team Leader Properties"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-11-08 12:09:03.171145",
+ "modified": "2023-11-16 15:54:19.149347",
  "modified_by": "Administrator",
  "module": "Revenue Management",
  "name": "Team Leaders",
