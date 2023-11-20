@@ -42,6 +42,7 @@ def upload_file_api(filename = None):
                 os.remove(filename)
                 file = response['message']['file_url']
                 return {"success": True, "file": file}
+            frappe.log_error("upload_file_api", response)
             return {"success": False, "message": response}
         return {"success": False, "message": "filename is missing"}
     except Exception as e:
