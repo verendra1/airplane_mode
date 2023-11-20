@@ -41,7 +41,8 @@
    "fieldtype": "Link",
    "in_list_view": 1,
    "label": "Cluster",
-   "options": "Cluster Details"
+   "options": "Cluster Details",
+   "search_index": 1
   },
   {
    "fetch_from": "eid.job_name",
@@ -65,7 +66,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-11-16 15:54:19.149347",
+ "modified": "2023-11-20 18:16:20.451165",
  "modified_by": "Administrator",
  "module": "Revenue Management",
  "name": "Team Leaders",

@@ -41,13 +41,14 @@
    "fieldtype": "Link",
    "in_list_view": 1,
    "label": "CLUSTER",
-   "options": "Cluster Details"
+   "options": "Cluster Details",
+   "search_index": 1
   },
   {
    "fieldname": "status",
    "fieldtype": "Select",
    "label": "Status",
-   "options": "\nOpen\nOld Entity\nNot Yet Opened\nDeflagged\nCancelled"
+   "options": "\nOpen\nOld Entity\nNot Yet Opened\nDeflagged\nCancelled\nTemporary Closed\nPSID Changed"
   },
   {
    "fieldname": "area",
@@ -103,7 +104,7 @@
  "hide_toolbar": 1,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-11-08 15:43:51.806975",
+ "modified": "2023-11-20 18:16:45.656560",
  "modified_by": "Administrator",
  "module": "Revenue Management",
  "name": "Marsha Details",

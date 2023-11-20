@@ -58,7 +58,8 @@
    "fieldtype": "Link",
    "label": "Marsha",
    "options": "Marsha Details",
-   "reqd": 1
+   "reqd": 1,
+   "search_index": 1
   },
   {
    "fieldname": "eid",
@@ -72,7 +73,8 @@
    "fetch_from": "marsha.cluster",
    "fieldname": "cluster",
    "fieldtype": "Data",
-   "label": "Cluster"
+   "label": "Cluster",
+   "search_index": 1
   },
   {
    "default": "0",
@@ -90,7 +92,7 @@
  "hide_toolbar": 1,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-11-16 15:11:03.127133",
+ "modified": "2023-11-20 18:14:42.274105",
  "modified_by": "Administrator",
  "module": "Revenue Management",
  "name": "Employees",
