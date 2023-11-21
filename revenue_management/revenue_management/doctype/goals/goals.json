@@ -27,7 +27,7 @@
    "fieldname": "category",
    "fieldtype": "Select",
    "label": "Category",
-   "options": "\nRevPAR\nCatering Rev\nAVAILRMS_TY\nRmRev\nRPI"
+   "options": "\nRevPAR\nCatering Rev\nAVAILRMS_TY\nRmRev\nRPI\nTymktavail\nHBD RevPAR\nComp Set RevPAR Growth\nTymarravail"
   },
   {
    "fieldname": "year",
@@ -64,7 +64,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-11-17 12:54:05.876709",
+ "modified": "2023-11-21 11:27:53.276191",
  "modified_by": "Administrator",
  "module": "Revenue Management",
  "name": "Goals",

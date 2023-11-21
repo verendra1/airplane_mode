@@ -275,21 +275,22 @@ def goal_maintance(goal_file, hotel_break_down_file):
 		goals_df = pd.DataFrame.from_records(goals_data)
 
 		
-		hotel_bd_df = pd.read_excel(hotel_break_down)
+		hotel_bd_df = pd.read_excel(hotel_break_down, skiprows=1)
 		hotel_bd_df['Unnamed: 0'] = hotel_bd_df['Unnamed: 0'].replace(np.nan, "marsha")
 		removed_unmaed_columns_of_hotel_db = hotel_bd_df.loc[:, ~
 										hotel_bd_df.columns.str.contains('^Unnamed')]
-		removed_duplicate_columns_hotel_db = removed_unmaed_columns_of_hotel_db.loc[:,
-															   ~removed_unmaed_columns_of_hotel_db.columns.str.contains('.1')]
-		dates = list(removed_duplicate_columns_hotel_db.columns)
+		# removed_duplicate_columns_hotel_db = removed_unmaed_columns_of_hotel_db.loc[:,
+		# 													   ~removed_unmaed_columns_of_hotel_db.columns.str.contains('.1')]
+		dates = list(removed_unmaed_columns_of_hotel_db.columns)
 		hotel_bd_df.columns = hotel_bd_df.iloc[0]
 		hotel_bd_df = hotel_bd_df[1:]
-		hotel_bd_df.set_index('marsha', inplace=True)
-		avail_df = hotel_bd_df[['Tymktavail','RevPAR', 'Comp Set RevPAR', 'Tymarravail', 'RPI']]
+		hotel_bd_df.set_index('Marsha Code', inplace=True)
+		avail_df = hotel_bd_df[['Tymktavail','RevPAR', 'Comp Set RevPAR Growth', 'Tymarravail', 'RPI']]
+		avail_df.rename(columns={'RevPAR': 'HBD RevPAR'}, inplace=True)
 		hotel_db_data = []
-		for each in ['Tymktavail','RevPAR', 'Comp Set RevPAR', 'Tymarravail', 'RPI']:
+		for each in ['Tymktavail','HBD RevPAR', 'Comp Set RevPAR Growth', 'Tymarravail', 'RPI']:
 			each_df = avail_df[each]
-			months = [datetime.datetime.strptime(value, '%B %Y').strftime('%b') for value in dates]
+			months = [datetime.datetime.strptime(value, '%m').strftime('%b') for value in dates]
 			each_df = each_df.set_axis(months, axis=1)
 			converted_hotel_df = each_df.apply(lambda x: x.apply(
 					lambda y: {"month": x.name, "amount": y, "category": each}), axis=0)
@@ -300,8 +301,19 @@ def goal_maintance(goal_file, hotel_break_down_file):
 					list(map(lambda x: {**x, "marsha": key}, value)))
 		hotel_df = pd.DataFrame.from_records(hotel_db_data)
 		final_df = pd.concat([goals_df, hotel_df])
-		print(final_df)
-
+		final_df["Year"] = datetime.datetime.now().year
+		final_df["amount"].replace(np.nan,0, inplace=True)
+		goal_file_name = frappe.utils.get_bench_path() + "/sites/" + site_name + \
+					"/public/files/Goals Details.csv"
+		final_df.to_csv(
+						goal_file_name, sep=',', index=False)
+		file_upload = upload_file_api(filename=goal_file_name)
+		if not file_upload["success"]:
+			return file_upload
+		frappe.db.delete("Goals", {"year": datetime.datetime.now().year})
+		frappe.db.commit()
+		dataimport(file=file_upload["file"], import_type="Insert New Records",
+					reference_doctype="Goals")
 	except Exception as e:
 		exc_type, exc_obj, exc_tb = sys.exc_info()
 		frappe.log_error("goal_maintance", "line No:{}\n{}".format(
@@ -317,7 +329,7 @@ def import_goal_maintance(goal_file, hotel_break_down_file):
 			queue="short",
 			timeout=800000,
 			is_async=True,
-			now=True,
+			now=False,
 			goal_file = goal_file,
 			hotel_break_down_file = hotel_break_down_file,
 			event="insert_d110_data",
@@ -334,6 +346,7 @@ def import_goal_maintance(goal_file, hotel_break_down_file):
 @frappe.whitelist()
 def get_goals(marsha=None, year=None):
 	try:
+		get_marsha_details =  frappe.db.get_value("Marsha Details", {"marsha": marsha}, ["marsha", "market_share_type", "ms_comp_non_comp"], as_dict=True)
 		get_goals = frappe.db.get_list("Goals", filters={"marsha": marsha, "year": year}, fields=["category", "month", "amount"])
 		if len(get_goals) == 0:
 			return {"success": False, "message": "No data found"}
@@ -348,6 +361,10 @@ def get_goals(marsha=None, year=None):
 		# piovt_df.columns = piovt_df.iloc[0]
 		piovt_df = piovt_df.droplevel(0, axis=1)
 		piovt_df.rename(columns = {"" : "month", "Catering Rev":"Catering_Rev"}, inplace = True)
+		if get_marsha_details["market_share_type"] == 'SB' and get_marsha_details["ms_comp_non_comp"] == 'Y':
+			piovt_df = piovt_df[["month", "Catering_Rev", "AVAILRMS_TY", "RPI", "RmRev"]]
+		else:
+			piovt_df = piovt_df[["month", "Catering_Rev", "AVAILRMS_TY", "RevPAR", "RmRev"]]
 		final_df = pd.concat([empty_dataframe, piovt_df])
 		final_df.replace(np.nan,0, inplace=True)
 		months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", 

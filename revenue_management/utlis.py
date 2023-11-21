@@ -34,7 +34,7 @@ def upload_file_api(filename = None):
         if filename:
             files = {"file": open(filename, 'rb')}
             payload = {'is_private': 1, 'folder': 'Home'}
-            upload_qr_image = requests.post("http://rvmn.ezyinvoicing.com" + "/api/method/upload_file",
+            upload_qr_image = requests.post("http://0.0.0.0:8000" + "/api/method/upload_file",
                                             files=files,
                                             data=payload, verify=False)
             response = upload_qr_image.json()
