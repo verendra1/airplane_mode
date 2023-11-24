@@ -21,7 +21,6 @@ def dataimport(file=None, import_type=None, reference_doctype=None):
         frappe.db.commit()
         data_import = data.name
         start_import = form_start_import(data_import)
-        get_error = frappe.db.get_value("Data Import", data_import, "import_warning")
         return {"success": True}
     except Exception as e:
         exc_type, exc_obj, exc_tb = sys.exc_info()
@@ -35,7 +34,7 @@ def upload_file_api(filename = None):
         if filename:
             files = {"file": open(filename, 'rb')}
             payload = {'is_private': 1, 'folder': 'Home'}
-            upload_qr_image = requests.post("http://0.0.0.0:8002" + "/api/method/upload_file",
+            upload_qr_image = requests.post("http://0.0.0.0:8000" + "/api/method/upload_file",
                                             files=files,
                                             data=payload, verify=False)
             response = upload_qr_image.json()

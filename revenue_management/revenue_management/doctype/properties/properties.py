@@ -27,28 +27,31 @@ def import_properties(file=None):
         file_path = frappe.utils.get_bench_path() + "/sites/" + site_name + file
         excel_data_df = pd.read_excel(file_path)
         if len(excel_data_df) == 0:
+            frappe.publish_realtime("data_import_error", {"data_import": 'Marsha Details',"show_message": "no data in the file", "file": cluser_file_upload["file"]})
             return {"success": False, "message": "No data in the file"}
         masha_details_columns = ["MARSHA", "Property Name on Tableau", "Status", "Area", "ADRS", "City",
                                  "Team Name", "Currency", "Country", "Market Share Type", "Market Share Comp", "Team Type", "Billing Unit"]
         if set(masha_details_columns).issubset(excel_data_df.columns):
             cluster_details = get_cluster_details()
             if not cluster_details["success"]:
+                frappe.publish_realtime("data_import_error", {"data_import": 'Marsha Details',"show_message": cluster_details["message"], "file": cluser_file_upload["file"]})
                 return cluster_details
             get_masha_list = frappe.db.get_list("Marsha Details", pluck="name")
             masha_details_df = excel_data_df[masha_details_columns]
             if len(masha_details_df) > 0:
                 get_missing_cluster_properties = masha_details_df[~masha_details_df["Team Name"].isin(
                     cluster_details["data"])]
-                # if len(get_missing_cluster_properties) > 0:
-                #     missing_clusters_file = frappe.utils.get_bench_path() + "/sites/" + site_name + \
-                #         "/public/files/Missing Clusters.xlsx"
-                #     get_missing_cluster_properties.to_excel(
-                #         missing_clusters_file, index=False)
-                #     cluser_file_upload = upload_file_api(
-                #         filename=missing_clusters_file)
-                #     if not cluser_file_upload["success"]:
-                #         return cluser_file_upload
-                #     return {"success": False, "message": "missing cluster detials for some properties", "file": cluser_file_upload["file"]}
+                if len(get_missing_cluster_properties) > 0:
+                    missing_clusters_file = frappe.utils.get_bench_path() + "/sites/" + site_name + \
+                        "/public/files/Missing Clusters.xlsx"
+                    get_missing_cluster_properties.to_excel(
+                        missing_clusters_file, index=False)
+                    cluser_file_upload = upload_file_api(
+                        filename=missing_clusters_file)
+                    if not cluser_file_upload["success"]:
+                        return cluser_file_upload
+                    frappe.publish_realtime("data_import_error", {"data_import": 'Marsha Details',"show_message": "missing cluster detials for some properties", "file": cluser_file_upload["file"]})
+                    return {"success": False, "message": "missing cluster detials for some properties", "file": cluser_file_upload["file"]}
                 # remove_missing_cluster_properties =  masha_details_df[masha_details_df["Team Name"].isin(cluster_details["data"])]
                 remove_existing_masha_data_df = masha_details_df[~masha_details_df["MARSHA"].isin(
                     get_masha_list)]
@@ -80,7 +83,9 @@ def import_properties(file=None):
                     dataimport(file=file_upload["file"], import_type="Update Existing Records",
                                reference_doctype="Marsha Details")
                 return {"success": True, "message": "Data Imported"}
+            frappe.publish_realtime("data_import_error", {"data_import": 'Marsha Details',"show_message": "no data found", "file": ""})
             return {"success": False, "message": "No data found"}
+        frappe.publish_realtime("data_import_error", {"data_import": 'Marsha Details',"show_message": "file mismatch.", "file": ""})
         return {"success": False, "message": "Some columns are missing in excel file."}
     except Exception as e:
         exc_type, exc_obj, exc_tb = sys.exc_info()
@@ -97,7 +102,7 @@ def import_properties_team_leaders(file=None):
             queue="long",
             timeout=800000,
             is_async=True,
-            now=True,
+            now=False,
             file=file,
             event="import_properties",
             job_name="Properties_Import"

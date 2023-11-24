@@ -8,6 +8,7 @@ import traceback
 import pandas as pd
 from frappe.utils import cstr
 from frappe.model.document import Document
+from frappe.utils.background_jobs import enqueue
 from revenue_management.utlis import dataimport, upload_file_api
 
 class Employees(Document):
@@ -15,14 +16,27 @@ class Employees(Document):
 
 
 @frappe.whitelist()
-def import_employees(file=None):
+def employees_import(file=None):
 	try:
 		if not file:
+			frappe.publish_realtime("data_import_error", {"data_import": 'Employees',"show_message": "file is missing", "file": ""})
 			return {"success": False, "message": "file is missing"}
 		site_name = cstr(frappe.local.site)
 		file_path = frappe.utils.get_bench_path() + "/sites/" + site_name + file
 		excel_data_df = pd.read_excel(file_path)
 		if len(excel_data_df) > 0:
+			get_properties = frappe.db.get_list('Marsha Details', pluck="name")
+			missing_marsha = excel_data_df[~excel_data_df["Work Location Code"].isin(get_properties)]
+			if len(missing_marsha) > 0:
+				missing_marsha_file = frappe.utils.get_bench_path() + "/sites/" + site_name + \
+                        "/public/files/Missing Marshas.xlsx"
+				missing_marsha.to_excel(missing_marsha_file, index=False)
+				cluser_file_upload = upload_file_api(filename=missing_marsha_file)
+				if not cluser_file_upload["success"]:
+					return cluser_file_upload
+				frappe.publish_realtime("data_import_error", {"data_import": 'Employees',"show_message": "missing marsha detials for some employees", "file": cluser_file_upload["file"]})
+				return {"success": False, "message": "missing marsha detials for some employees", "file": cluser_file_upload["file"]}
+
 			excel_data_df[['First Name', 'Last Name']] = excel_data_df["Person Name"].apply(lambda x: pd.Series(str(x).split(",")))
 			get_employee_list = frappe.db.get_list("Employees", pluck="name")
 			excel_data_df.rename(columns={"Work Location Code": "Marsha", "Person User Name": "EID"}, inplace=True)
@@ -50,9 +64,32 @@ def import_employees(file=None):
 							reference_doctype="Employees")
 
 			return {"success": True, "message": "Data Imported"}
+		frappe.publish_realtime("data_import_error", {"data_import": 'Employees',"show_message": "file is empty", "file": ""})
 		return {"success": False, "message": "file is empty"}
 	except Exception as e:
 		exc_type, exc_obj, exc_tb = sys.exc_info()
 		frappe.log_error("import_properties_team_leaders", "line No:{}\n{}".format(
 			exc_tb.tb_lineno, traceback.format_exc()))
 		return {"success": False, "error": str(e)}
+
+
+
+@frappe.whitelist()
+def import_employees(file=None):
+    try:
+        enqueue(
+            employees_import,
+            queue="long",
+            timeout=800000,
+            is_async=True,
+            now=True,
+            file=file,
+            event="import_employees",
+            job_name="Employees_Import"
+        )
+        return {"success": True, "Message": "Employees Import Starts Soon"}
+    except Exception as e:
+        exc_type, exc_obj, exc_tb = sys.exc_info()
+        frappe.log_error("import_properties_team_leaders", "line No:{}\n{}".format(
+            exc_tb.tb_lineno, traceback.format_exc()))
+        return {"success": False, "error": str(e)}

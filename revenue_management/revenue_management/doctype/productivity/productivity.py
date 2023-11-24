@@ -69,3 +69,40 @@ def import_productivity(file=None, rpi_file=None, return_period=None):
 		frappe.log_error("import_properties_team_leaders", "line No:{}\n{}".format(
             exc_tb.tb_lineno, traceback.format_exc()))
 		return {"success": False, "error": str(e)}
+
+
+@frappe.whitelist()
+def get_productivity(marsha=None, month=None, year=None):
+	try:
+		get_marsha_details =  frappe.db.get_value("Productivity", {"marsha": marsha}, ["marsha", "market_share_type", "ms_comp_non_comp"], as_dict=True)
+		get_goals = frappe.db.get_list("Goals", filters={"marsha": marsha, "year": year}, fields=["category", "month", "amount"])
+		if len(get_goals) == 0:
+			return {"success": False, "message": "No data found"}
+		empty_dataframe = pd.DataFrame(columns=["month", "Catering_Rev", "RPI", "RmRev"])
+		df = pd.DataFrame.from_records(get_goals)
+		group_df = df.groupby("category").agg({"amount": "sum"})
+		group_df.replace(np.nan,0, inplace=True)
+		sum_data = group_df.to_dict()
+		remaining_sum_data = {each:0 for each in ["Catering Rev", "RPI", "RmRev"] if each not in sum_data["amount"]}
+		sum_data = sum_data["amount"] | remaining_sum_data
+		piovt_df = pd.pivot_table(df, index= ['month'], columns = ['category'], values=['amount']).reset_index()
+		# piovt_df.columns = piovt_df.iloc[0]
+		piovt_df = piovt_df.droplevel(0, axis=1)
+		piovt_df.rename(columns = {"" : "month", "Catering Rev":"Catering_Rev"}, inplace = True)
+		if get_marsha_details["market_share_type"] == 'SB' and get_marsha_details["ms_comp_non_comp"] == 'Y':
+			piovt_df = piovt_df[["month", "Catering_Rev", "RPI", "RmRev"]]
+		else:
+			piovt_df = piovt_df[["month", "Catering_Rev", "RmRev"]]
+		final_df = pd.concat([empty_dataframe, piovt_df])
+		final_df.replace(np.nan,0, inplace=True)
+		months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", 
+          "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+		final_df['month'] = pd.Categorical(final_df['month'], categories=months, ordered=True)
+		final_df = final_df.sort_values(by="month")
+		data = final_df.to_dict('records')
+		return {"success": True, "data": data, "totals": sum_data}
+	except Exception as e:
+		exc_type, exc_obj, exc_tb = sys.exc_info()
+		frappe.log_error("get_goals", "line No:{}\n{}".format(
+			exc_tb.tb_lineno, traceback.format_exc()))
+		return {"success": False, "error": str(e)}
