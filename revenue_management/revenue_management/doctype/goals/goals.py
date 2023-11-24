@@ -239,7 +239,6 @@ def goal_maintance(goal_file, hotel_break_down_file):
 	try:
 		site_name = cstr(frappe.local.site)
 		file_path = frappe.utils.get_bench_path() + "/sites/" + site_name + goal_file
-		hotel_break_down = frappe.utils.get_bench_path() + "/sites/" + site_name + hotel_break_down_file
 
 		get_marsha_details = frappe.db.get_all("Marsha Details",  fields=["name as marsha", "market_share_type", "ms_comp_non_comp", "team_type", "cluster"])
 		if len(get_marsha_details) == 0:
@@ -273,33 +272,11 @@ def goal_maintance(goal_file, hotel_break_down_file):
 				goals_data.extend(
 					list(map(lambda x: {**x, "marsha": key}, value)))
 		goals_df = pd.DataFrame.from_records(goals_data)
-
-		
-		hotel_bd_df = pd.read_excel(hotel_break_down, skiprows=1)
-		hotel_bd_df['Unnamed: 0'] = hotel_bd_df['Unnamed: 0'].replace(np.nan, "marsha")
-		removed_unmaed_columns_of_hotel_db = hotel_bd_df.loc[:, ~
-										hotel_bd_df.columns.str.contains('^Unnamed')]
-		# removed_duplicate_columns_hotel_db = removed_unmaed_columns_of_hotel_db.loc[:,
-		# 													   ~removed_unmaed_columns_of_hotel_db.columns.str.contains('.1')]
-		dates = list(removed_unmaed_columns_of_hotel_db.columns)
-		hotel_bd_df.columns = hotel_bd_df.iloc[0]
-		hotel_bd_df = hotel_bd_df[1:]
-		hotel_bd_df.set_index('Marsha Code', inplace=True)
-		avail_df = hotel_bd_df[['Tymktavail','RevPAR', 'Comp Set RevPAR Growth', 'Tymarravail', 'RPI']]
-		avail_df.rename(columns={'RevPAR': 'HBD RevPAR'}, inplace=True)
-		hotel_db_data = []
-		for each in ['Tymktavail','HBD RevPAR', 'Comp Set RevPAR Growth', 'Tymarravail', 'RPI']:
-			each_df = avail_df[each]
-			months = [datetime.datetime.strptime(value, '%m').strftime('%b') for value in dates]
-			each_df = each_df.set_axis(months, axis=1)
-			converted_hotel_df = each_df.apply(lambda x: x.apply(
-					lambda y: {"month": x.name, "amount": y, "category": each}), axis=0)
-			converted_hotel_df = converted_hotel_df.T
-			hotel_data = converted_hotel_df.to_dict('list')
-			for key, value in hotel_data.items():
-				hotel_db_data.extend(
-					list(map(lambda x: {**x, "marsha": key}, value)))
-		hotel_df = pd.DataFrame.from_records(hotel_db_data)
+		get_rpi_data = extract_rpi_file(filename=hotel_break_down_file)
+		if not get_rpi_data["success"]:
+			return get_rpi_data
+		hotel_df = pd.DataFrame.from_records(get_rpi_data["data"])
+		hotel_df = hotel_df[hotel_df["category"] == "RPI"]
 		final_df = pd.concat([goals_df, hotel_df])
 		final_df["Year"] = datetime.datetime.now().year
 		final_df["amount"].replace(np.nan,0, inplace=True)
@@ -329,7 +306,7 @@ def import_goal_maintance(goal_file, hotel_break_down_file):
 			queue="short",
 			timeout=800000,
 			is_async=True,
-			now=False,
+			now=True,
 			goal_file = goal_file,
 			hotel_break_down_file = hotel_break_down_file,
 			event="insert_d110_data",
@@ -410,5 +387,44 @@ def update_goals(data=[], month=None, year=None, marsha=None):
 	except Exception as e:
 		exc_type, exc_obj, exc_tb = sys.exc_info()
 		frappe.log_error("update_goals", "line No:{}\n{}".format(
+			exc_tb.tb_lineno, traceback.format_exc()))
+		return {"success": False, "error": str(e)}
+
+
+def extract_rpi_file(filename=None):
+	try:
+		site_name = cstr(frappe.local.site)
+		hotel_break_down = frappe.utils.get_bench_path() + "/sites/" + site_name + filename
+		hotel_bd_df = pd.read_excel(hotel_break_down, skiprows=1)
+		hotel_bd_df['Unnamed: 0'] = hotel_bd_df['Unnamed: 0'].replace(np.nan, "marsha")
+		removed_unmaed_columns_of_hotel_db = hotel_bd_df.loc[:, ~
+										hotel_bd_df.columns.str.contains('^Unnamed')]
+		# removed_duplicate_columns_hotel_db = removed_unmaed_columns_of_hotel_db.loc[:,
+		# 													   ~removed_unmaed_columns_of_hotel_db.columns.str.contains('.1')]
+		dates = list(removed_unmaed_columns_of_hotel_db.columns)
+		hotel_bd_df.columns = hotel_bd_df.iloc[0]
+		hotel_bd_df = hotel_bd_df[1:]
+		remove_grand_total = hotel_bd_df[hotel_bd_df["Marsha Code"] != "Grand Total"]
+		remove_grand_total.set_index('Marsha Code', inplace=True)
+		avail_df = remove_grand_total[['Tymktavail','RevPAR', 'Comp Set RevPAR Growth', 'Tymarravail', 'RPI']]
+		avail_df.rename(columns={'RevPAR': 'HBD RevPAR'}, inplace=True)
+		hotel_db_data = []
+		for each in ['Tymktavail','HBD RevPAR', 'Comp Set RevPAR Growth', 'Tymarravail', 'RPI']:
+			each_df = avail_df[each]
+			months = [datetime.datetime.strptime(value, '%m').strftime('%b') for value in dates]
+			each_df = each_df.set_axis(months, axis=1)
+			converted_hotel_df = each_df.apply(lambda x: x.apply(
+					lambda y: {"month": x.name, "amount": y, "category": each}), axis=0)
+			converted_hotel_df = converted_hotel_df.T
+			hotel_data = converted_hotel_df.to_dict('list')
+			for key, value in hotel_data.items():
+				hotel_db_data.extend(
+					list(map(lambda x: {**x, "marsha": key}, value)))
+		if len(hotel_db_data) > 0:
+			return {"success": True, "data": hotel_db_data}
+		return {"success": False, "message": "no data found in Hbreakdown file."}
+	except Exception as e:
+		exc_type, exc_obj, exc_tb = sys.exc_info()
+		frappe.log_error("extract_rpi_file", "line No:{}\n{}".format(
 			exc_tb.tb_lineno, traceback.format_exc()))
 		return {"success": False, "error": str(e)}

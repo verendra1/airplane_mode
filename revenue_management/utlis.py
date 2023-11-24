@@ -21,6 +21,7 @@ def dataimport(file=None, import_type=None, reference_doctype=None):
         frappe.db.commit()
         data_import = data.name
         start_import = form_start_import(data_import)
+        get_error = frappe.db.get_value("Data Import", data_import, "import_warning")
         return {"success": True}
     except Exception as e:
         exc_type, exc_obj, exc_tb = sys.exc_info()
@@ -34,7 +35,7 @@ def upload_file_api(filename = None):
         if filename:
             files = {"file": open(filename, 'rb')}
             payload = {'is_private': 1, 'folder': 'Home'}
-            upload_qr_image = requests.post("http://0.0.0.0:8000" + "/api/method/upload_file",
+            upload_qr_image = requests.post("http://0.0.0.0:8002" + "/api/method/upload_file",
                                             files=files,
                                             data=payload, verify=False)
             response = upload_qr_image.json()
@@ -150,5 +151,19 @@ def get_current_quarter_months():
     except Exception as e:
         exc_type, exc_obj, exc_tb = sys.exc_info()
         frappe.log_error("get_current_quarter_months", "line No:{}\n{}".format(
+            exc_tb.tb_lineno, traceback.format_exc()))
+        return {"success": False, "error": str(e)}
+
+
+@frappe.whitelist()
+def get_cluster_details():
+    try:
+        data = frappe.db.get_list("Cluster Details", pluck="name")
+        if len(data) > 0:
+            return {"success": True, "data": data}
+        return {"success": False, "message": "no cluster details were found"}
+    except Exception as e:
+        exc_type, exc_obj, exc_tb = sys.exc_info()
+        frappe.log_error("get_cluster_details", "line No:{}\n{}".format(
             exc_tb.tb_lineno, traceback.format_exc()))
         return {"success": False, "error": str(e)}

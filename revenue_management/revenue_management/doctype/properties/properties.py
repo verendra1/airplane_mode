@@ -10,7 +10,8 @@ import sys
 import traceback
 from frappe.utils import cstr
 from frappe.model.document import Document
-from revenue_management.utlis import dataimport, upload_file_api
+from frappe.utils.background_jobs import enqueue
+from revenue_management.utlis import dataimport, upload_file_api, get_cluster_details
 
 
 class Properties(Document):
@@ -18,7 +19,7 @@ class Properties(Document):
 
 
 @frappe.whitelist()
-def import_properties_team_leaders(file=None):
+def import_properties(file=None):
     try:
         if not file:
             return {"success": False, "message": "file is missing"}
@@ -30,9 +31,25 @@ def import_properties_team_leaders(file=None):
         masha_details_columns = ["MARSHA", "Property Name on Tableau", "Status", "Area", "ADRS", "City",
                                  "Team Name", "Currency", "Country", "Market Share Type", "Market Share Comp", "Team Type", "Billing Unit"]
         if set(masha_details_columns).issubset(excel_data_df.columns):
+            cluster_details = get_cluster_details()
+            if not cluster_details["success"]:
+                return cluster_details
             get_masha_list = frappe.db.get_list("Marsha Details", pluck="name")
             masha_details_df = excel_data_df[masha_details_columns]
             if len(masha_details_df) > 0:
+                get_missing_cluster_properties = masha_details_df[~masha_details_df["Team Name"].isin(
+                    cluster_details["data"])]
+                # if len(get_missing_cluster_properties) > 0:
+                #     missing_clusters_file = frappe.utils.get_bench_path() + "/sites/" + site_name + \
+                #         "/public/files/Missing Clusters.xlsx"
+                #     get_missing_cluster_properties.to_excel(
+                #         missing_clusters_file, index=False)
+                #     cluser_file_upload = upload_file_api(
+                #         filename=missing_clusters_file)
+                #     if not cluser_file_upload["success"]:
+                #         return cluser_file_upload
+                #     return {"success": False, "message": "missing cluster detials for some properties", "file": cluser_file_upload["file"]}
+                # remove_missing_cluster_properties =  masha_details_df[masha_details_df["Team Name"].isin(cluster_details["data"])]
                 remove_existing_masha_data_df = masha_details_df[~masha_details_df["MARSHA"].isin(
                     get_masha_list)]
                 masha_file_name = frappe.utils.get_bench_path() + "/sites/" + site_name + \
@@ -65,6 +82,27 @@ def import_properties_team_leaders(file=None):
                 return {"success": True, "message": "Data Imported"}
             return {"success": False, "message": "No data found"}
         return {"success": False, "message": "Some columns are missing in excel file."}
+    except Exception as e:
+        exc_type, exc_obj, exc_tb = sys.exc_info()
+        frappe.log_error("import_properties", "line No:{}\n{}".format(
+            exc_tb.tb_lineno, traceback.format_exc()))
+        return {"success": False, "error": str(e)}
+
+
+@frappe.whitelist()
+def import_properties_team_leaders(file=None):
+    try:
+        enqueue(
+            import_properties,
+            queue="long",
+            timeout=800000,
+            is_async=True,
+            now=True,
+            file=file,
+            event="import_properties",
+            job_name="Properties_Import"
+        )
+        return {"success": True, "Message": "Properties Import Starts Soon"}
     except Exception as e:
         exc_type, exc_obj, exc_tb = sys.exc_info()
         frappe.log_error("import_properties_team_leaders", "line No:{}\n{}".format(

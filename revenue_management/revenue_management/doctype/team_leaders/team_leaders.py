@@ -149,12 +149,12 @@ def enque_team_leader_import(file=None):
     try:
         enqueue(
             import_team_leader,
-            queue="short",
+            queue="long",
             timeout=800000,
             is_async=True,
             now=False,
             file=file,
-            event="insert_d110_data",
+            event="import_team_leader",
             job_name="Team_Leaders_Import"
         )
         return {"success": True, "Message": "Team Leaders Import Starts Soon"}
