@@ -276,7 +276,6 @@ def goal_maintance(goal_file, hotel_break_down_file):
 		if not get_rpi_data["success"]:
 			return get_rpi_data
 		hotel_df = pd.DataFrame.from_records(get_rpi_data["data"])
-		hotel_df = hotel_df[hotel_df["category"] == "RPI"]
 		final_df = pd.concat([goals_df, hotel_df])
 		final_df["Year"] = datetime.datetime.now().year
 		final_df["amount"].replace(np.nan,0, inplace=True)
