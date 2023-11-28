@@ -3,6 +3,7 @@ import frappe
 import traceback
 import requests
 import sys, os
+from frappe.utils import cstr
 from frappe.core.doctype.data_import.data_import import form_start_import
 from frappe.utils.password import check_password
 
@@ -34,7 +35,8 @@ def upload_file_api(filename = None):
         if filename:
             files = {"file": open(filename, 'rb')}
             payload = {'is_private': 1, 'folder': 'Home'}
-            upload_qr_image = requests.post("http://0.0.0.0:8000" + "/api/method/upload_file",
+            site_name = cstr(frappe.local.site)
+            upload_qr_image = requests.post("https://"+site_name+ "/api/method/upload_file",
                                             files=files,
                                             data=payload, verify=False)
             response = upload_qr_image.json()
