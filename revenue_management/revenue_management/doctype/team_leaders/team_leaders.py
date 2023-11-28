@@ -64,7 +64,6 @@ def import_team_leader(file=None):
             team_leaders_df = excel_data_df[team_leader_details]
             team_leaders_df["EID"] = team_leaders_df["EID"].astype(str)
 
-            missing_employee_file = ""
             # TeamLeader not there employee doctype conditon
             get_team_leader_not_in_employee = team_leaders_df[~team_leaders_df["EID"].isin(
                 get_employee_details)]
@@ -79,65 +78,64 @@ def import_team_leader(file=None):
                 if not fileupload["success"]:
                     return fileupload
                 missing_employee_file = fileupload["file"]
+                frappe.publish_realtime("data_import_error", {"data_import": 'Team Leader',"show_message": "missing employees", "file": missing_employee_file})
+                return {"success": False, "message": "missing employees", "missing_employees_file": missing_employee_file}
 
             # TeamLeader exists in employee doctype conditon
             team_leaders_df = team_leaders_df[team_leaders_df["EID"].isin(
                 get_employee_details)]
 
-            if len(team_leaders_df) > 0:
-                remove_existing_team_leaders = team_leaders_df[~team_leaders_df["EID"].isin(
-                    team_leader_list)]
-                team_leader_file_name = frappe.utils.get_bench_path() + "/sites/" + site_name + \
-                    "/public/files/Team Leaders.csv"
-                if len(remove_existing_team_leaders) > 0:
-                    sort_new_team_leaders = remove_existing_team_leaders.sort_values([
-                                                                                     "Team Name"])
-                    sort_new_team_leaders.rename(
-                        columns={"MARSHA": "Marsha (Properties)", "Team Name": "Cluster"}, inplace=True)
-                    remove_duplicate_values = [
-                        "Revenue Leader", "EID", "Email Id", "Cluster"]
-                    sort_new_team_leaders[remove_duplicate_values] = sort_new_team_leaders[remove_duplicate_values].where(
-                        sort_new_team_leaders[remove_duplicate_values].apply(lambda x: x != x.shift()), '')
-                    sort_new_team_leaders.loc[sort_new_team_leaders["Revenue Leader"].duplicated(
-                    ), "Revenue Leader"] = np.NaN
+            remove_existing_team_leaders = team_leaders_df[~team_leaders_df["EID"].isin(
+                team_leader_list)]
+            team_leader_file_name = frappe.utils.get_bench_path() + "/sites/" + site_name + \
+                "/public/files/Team Leaders.csv"
+            if len(remove_existing_team_leaders) > 0:
+                sort_new_team_leaders = remove_existing_team_leaders.sort_values([
+                                                                                    "Team Name"])
+                sort_new_team_leaders.rename(
+                    columns={"MARSHA": "Marsha (Properties)", "Team Name": "Cluster"}, inplace=True)
+                remove_duplicate_values = [
+                    "Revenue Leader", "EID", "Email Id", "Cluster"]
+                sort_new_team_leaders[remove_duplicate_values] = sort_new_team_leaders[remove_duplicate_values].where(
+                    sort_new_team_leaders[remove_duplicate_values].apply(lambda x: x != x.shift()), '')
+                sort_new_team_leaders.loc[sort_new_team_leaders["Revenue Leader"].duplicated(
+                ), "Revenue Leader"] = np.NaN
 
-                    sort_new_team_leaders.to_csv(
-                        team_leader_file_name, index=False)
+                sort_new_team_leaders.to_csv(
+                    team_leader_file_name, index=False)
 
-                    file_upload = upload_file_api(
-                        filename=team_leader_file_name)
-                    if not file_upload["success"]:
-                        return file_upload
+                file_upload = upload_file_api(
+                    filename=team_leader_file_name)
+                if not file_upload["success"]:
+                    return file_upload
 
-                    dataimport(file=file_upload["file"], import_type="Insert New Records",
-                               reference_doctype="Team Leaders")
+                dataimport(file=file_upload["file"], import_type="Insert New Records",
+                            reference_doctype="Team Leaders")
 
-                existing_team_leader_data = team_leaders_df[team_leaders_df["EID"].isin(
-                    team_leader_list)]
-                if len(existing_team_leader_data) > 0:
-                    sort_existing_team_leaders = existing_team_leader_data.sort_values([
-                        "Team Name"])
-                    sort_existing_team_leaders.rename(
-                        columns={"MARSHA": "Marsha (Properties)", "Team Name": "Cluster"}, inplace=True)
-                    remove_duplicate_values = [
-                        "Revenue Leader", "EID", "Email Id", "Cluster"]
-                    sort_existing_team_leaders[remove_duplicate_values] = sort_existing_team_leaders[remove_duplicate_values].where(
-                        sort_existing_team_leaders[remove_duplicate_values].apply(lambda x: x != x.shift()), '')
-                    sort_existing_team_leaders.loc[sort_existing_team_leaders["Revenue Leader"].duplicated(
-                    ), "Revenue Leader"] = np.NaN
+            existing_team_leader_data = team_leaders_df[team_leaders_df["EID"].isin(
+                team_leader_list)]
+            if len(existing_team_leader_data) > 0:
+                sort_existing_team_leaders = existing_team_leader_data.sort_values([
+                    "Team Name"])
+                sort_existing_team_leaders.rename(
+                    columns={"MARSHA": "Marsha (Properties)", "Team Name": "Cluster"}, inplace=True)
+                remove_duplicate_values = [
+                    "Revenue Leader", "EID", "Email Id", "Cluster"]
+                sort_existing_team_leaders[remove_duplicate_values] = sort_existing_team_leaders[remove_duplicate_values].where(
+                    sort_existing_team_leaders[remove_duplicate_values].apply(lambda x: x != x.shift()), '')
+                sort_existing_team_leaders.loc[sort_existing_team_leaders["Revenue Leader"].duplicated(
+                ), "Revenue Leader"] = np.NaN
 
-                    sort_existing_team_leaders.to_csv(
-                        team_leader_file_name, index=False)
+                sort_existing_team_leaders.to_csv(
+                    team_leader_file_name, index=False)
 
-                    file_upload = upload_file_api(
-                        filename=team_leader_file_name)
-                    if not file_upload["success"]:
-                        return file_upload
-                    dataimport(file=file_upload["file"], import_type="Update Existing Records",
-                               reference_doctype="Team Leaders")
-                return {"success": True, "message": "Data Imported", "missing_employees_file": missing_employee_file}
-            frappe.publish_realtime("data_import_error", {"data_import": 'Team Leader',"show_message": "missing employees", "file": missing_employee_file})
-            return {"success": False, "message": "missing employees", "missing_employees_file": missing_employee_file}
+                file_upload = upload_file_api(
+                    filename=team_leader_file_name)
+                if not file_upload["success"]:
+                    return file_upload
+                dataimport(file=file_upload["file"], import_type="Update Existing Records",
+                            reference_doctype="Team Leaders")
+            return {"success": True, "message": "Data Imported"}
         frappe.publish_realtime("data_import_error", {"data_import": 'Team Leader',"show_message": "Some columns are missing in excel file.", "file": ""})
         return {"success": False, "message": "Some columns are missing in excel file.", "missing_employees_file": ""}
     except Exception as e:
