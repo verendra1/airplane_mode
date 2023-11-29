@@ -36,7 +36,7 @@ def upload_file_api(filename = None):
             files = {"file": open(filename, 'rb')}
             payload = {'is_private': 1, 'folder': 'Home'}
             site_name = cstr(frappe.local.site)
-            upload_qr_image = requests.post("http://"+"0.0.0.0:8000"+ "/api/method/upload_file",
+            upload_qr_image = requests.post("https://"+site_name+ "/api/method/upload_file",
                                             files=files,
                                             data=payload, verify=False)
             response = upload_qr_image.json()
