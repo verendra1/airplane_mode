@@ -26,14 +26,16 @@
   "column_break_t5fpy",
   "eligibility",
   "title",
-  "team_roster"
+  "team_roster",
+  "year"
  ],
  "fields": [
   {
    "fieldname": "eid",
    "fieldtype": "Link",
    "label": "EID",
-   "options": "Employees"
+   "options": "Employees",
+   "unique": 1
   },
   {
    "fieldname": "current_role_type",
@@ -137,12 +139,18 @@
    "fieldname": "email_id",
    "fieldtype": "Data",
    "label": "Email Id"
+  },
+  {
+   "fetch_from": "team_roster.year",
+   "fieldname": "year",
+   "fieldtype": "Data",
+   "label": "Year"
   }
  ],
  "hide_toolbar": 1,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-11-09 11:57:50.268701",
+ "modified": "2023-11-28 19:19:24.370901",
  "modified_by": "Administrator",
  "module": "Revenue Management",
  "name": "Team Members",

@@ -27,14 +27,14 @@ def import_properties(file=None):
         file_path = frappe.utils.get_bench_path() + "/sites/" + site_name + file
         excel_data_df = pd.read_excel(file_path)
         if len(excel_data_df) == 0:
-            frappe.publish_realtime("data_import_error", {"data_import": 'Marsha Details',"show_message": "no data in the file", "file": cluser_file_upload["file"]})
+            frappe.publish_realtime("data_import_error", {"data_import": 'Marsha Details',"show_message": "no data in the file"})
             return {"success": False, "message": "No data in the file"}
         masha_details_columns = ["MARSHA", "Property Name on Tableau", "Status", "Area", "ADRS", "City",
                                  "Team Name", "Currency", "Country", "Market Share Type", "Market Share Comp", "Team Type", "Billing Unit"]
         if set(masha_details_columns).issubset(excel_data_df.columns):
             cluster_details = get_cluster_details()
             if not cluster_details["success"]:
-                frappe.publish_realtime("data_import_error", {"data_import": 'Marsha Details',"show_message": cluster_details["message"], "file": cluser_file_upload["file"]})
+                frappe.publish_realtime("data_import_error", {"data_import": 'Marsha Details',"show_message": cluster_details["message"]})
                 return cluster_details
             get_masha_list = frappe.db.get_list("Marsha Details", pluck="name")
             masha_details_df = excel_data_df[masha_details_columns]
