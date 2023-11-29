@@ -31,7 +31,7 @@ def create_team_leader_as_user(doc, method=None):
             replace_first_name = message.replace(
                 "[first_name]", user_doc.first_name)
             replace_email = replace_first_name.replace(
-                "[email_id]", user_doc.email)
+                "[email_id]", user_doc.eid)
             send_mail_to_user(
                 content=replace_email, email_id=user_doc.email, subject=b2csuccess.subject)
         create_team(doc.as_dict())

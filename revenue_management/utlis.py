@@ -132,7 +132,7 @@ def send_mail_to_user(content, email_id, subject):
         return {'success': True, "message": "mail sent successfully"}
     except Exception as e:
         exc_type, exc_obj, exc_tb = sys.exc_info()
-        frappe.log_error("create_user", "line No:{}\n{}".format(
+        frappe.log_error("send_mail_to_user", "line No:{}\n{}".format(
             exc_tb.tb_lineno, traceback.format_exc()))
         return {"success": False, "error": str(e)}
 
