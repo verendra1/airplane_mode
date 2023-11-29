@@ -98,13 +98,14 @@
   {
    "fieldname": "billing_unit",
    "fieldtype": "Data",
-   "label": "Billing Unit"
+   "label": "Billing Unit",
+   "reqd": 1
   }
  ],
  "hide_toolbar": 1,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-11-20 18:16:45.656560",
+ "modified": "2023-11-29 13:17:13.719925",
  "modified_by": "Administrator",
  "module": "Revenue Management",
  "name": "Marsha Details",

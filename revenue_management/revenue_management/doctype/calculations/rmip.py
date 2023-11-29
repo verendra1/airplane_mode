@@ -62,9 +62,8 @@ def rmip_calculations(eid=None, month=None, year=None):
                 merge_goals_productivity['rmrev_earning'] = merge_goals_productivity.apply(lambda merge_goals_productivity: check_earnings(merge_goals_productivity["rmrev_achieved"]), axis = 1)
                 merge_goals_productivity['catering_rev_earning'] = merge_goals_productivity.apply(lambda merge_goals_productivity: check_earnings(merge_goals_productivity["catering_rev_achieved"]), axis = 1)
 
-                get_partiulcar_columns = merge_goals_productivity[["marsha", "rmrev_weightage", "catering_rev_weightage", "rmrev_earning", "catering_rev_earning"]]
+                get_particular_columns = merge_goals_productivity[["marsha", "rmrev_weightage", "catering_rev_weightage", "rmrev_earning", "catering_rev_earning"]]
 
-                         
 
                 
 

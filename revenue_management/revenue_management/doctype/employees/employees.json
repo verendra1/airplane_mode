@@ -18,7 +18,8 @@
   "cluster",
   "work_email_address",
   "added_as_team_member",
-  "added_as_approver"
+  "added_as_approver",
+  "billing_unit"
  ],
  "fields": [
   {
@@ -87,12 +88,17 @@
    "fieldname": "added_as_approver",
    "fieldtype": "Check",
    "label": "Added as Approver"
+  },
+  {
+   "fieldname": "billing_unit",
+   "fieldtype": "Data",
+   "label": "Billing Unit"
   }
  ],
  "hide_toolbar": 1,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-11-20 18:14:42.274105",
+ "modified": "2023-11-29 13:41:09.250106",
  "modified_by": "Administrator",
  "module": "Revenue Management",
  "name": "Employees",

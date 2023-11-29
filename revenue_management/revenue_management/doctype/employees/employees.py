@@ -25,8 +25,16 @@ def employees_import(file=None):
 		file_path = frappe.utils.get_bench_path() + "/sites/" + site_name + file
 		excel_data_df = pd.read_excel(file_path)
 		if len(excel_data_df) > 0:
-			get_properties = frappe.db.get_list('Marsha Details', pluck="name")
-			missing_marsha = excel_data_df[~excel_data_df["Work Location Code"].isin(get_properties)]
+			get_marsha_details = frappe.db.get_list('Marsha Details',  fields=["billing_unit", "marsha as Marsha"])
+			if len(get_marsha_details) == 0:
+				frappe.publish_realtime("data_import_error", {"data_import": 'Employees',"show_message": "no marsha details exists"})
+				return {"success": False, "message": "no marsha details exists"}
+			
+			marsha_df = pd.DataFrame.from_records(get_marsha_details)
+			billing_unit_list  = marsha_df['billing_unit'].tolist()
+
+			missing_marsha = excel_data_df[~excel_data_df["Work Location Code"].isin(billing_unit_list)]
+
 			if len(missing_marsha) > 0:
 				missing_marsha_file = frappe.utils.get_bench_path() + "/sites/" + site_name + \
                         "/public/files/Missing Marshas.xlsx"
@@ -34,13 +42,17 @@ def employees_import(file=None):
 				cluser_file_upload = upload_file_api(filename=missing_marsha_file)
 				if not cluser_file_upload["success"]:
 					return cluser_file_upload
-				frappe.publish_realtime("data_import_error", {"data_import": 'Employees',"show_message": "missing marsha detials for some employees", "file": cluser_file_upload["file"]})
-				return {"success": False, "message": "missing marsha detials for some employees", "file": cluser_file_upload["file"]}
-
+				frappe.publish_realtime("data_import_error", {"data_import": 'Employees',"show_message": "missing billing unit in marsha details for some employees", "file": cluser_file_upload["file"]})
+				return {"success": False, "message": "missing billing unit in marsha details for some employees", "file": cluser_file_upload["file"]}
+			
 			excel_data_df[['First Name', 'Last Name']] = excel_data_df["Person Name"].apply(lambda x: pd.Series(str(x).split(",")))
+
+			excel_data_df.rename(columns={"Work Location Code": "billing_unit", "Person User Name": "EID"}, inplace=True)
+			excel_data_df = pd.merge(excel_data_df, marsha_df, on="billing_unit")
+
 			get_employee_list = frappe.db.get_list("Employees", pluck="name")
-			excel_data_df.rename(columns={"Work Location Code": "Marsha", "Person User Name": "EID"}, inplace=True)
 			excel_data_df.drop(['Person Name'], axis=1, inplace=True)
+			excel_data_df.rename(columns={"billing_unit": "Billing Unit"})
 
 			remove_existing_employee_list = excel_data_df[~excel_data_df["EID"].isin(get_employee_list)]
 			employee_file_name = frappe.utils.get_bench_path() + "/sites/" + site_name + \
@@ -68,7 +80,7 @@ def employees_import(file=None):
 		return {"success": False, "message": "file is empty"}
 	except Exception as e:
 		exc_type, exc_obj, exc_tb = sys.exc_info()
-		frappe.log_error("import_properties_team_leaders", "line No:{}\n{}".format(
+		frappe.log_error("employees_import", "line No:{}\n{}".format(
 			exc_tb.tb_lineno, traceback.format_exc()))
 		return {"success": False, "error": str(e)}
 
