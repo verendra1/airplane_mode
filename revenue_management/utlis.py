@@ -36,7 +36,7 @@ def upload_file_api(filename = None):
             files = {"file": open(filename, 'rb')}
             payload = {'is_private': 1, 'folder': 'Home'}
             site_name = cstr(frappe.local.site)
-            upload_qr_image = requests.post("https://"+site_name+ "/api/method/upload_file",
+            upload_qr_image = requests.post("http://"+"0.0.0.0:8000"+ "/api/method/upload_file",
                                             files=files,
                                             data=payload, verify=False)
             response = upload_qr_image.json()
@@ -166,5 +166,24 @@ def get_cluster_details():
     except Exception as e:
         exc_type, exc_obj, exc_tb = sys.exc_info()
         frappe.log_error("get_cluster_details", "line No:{}\n{}".format(
+            exc_tb.tb_lineno, traceback.format_exc()))
+        return {"success": False, "error": str(e)}
+
+
+def get_quarter_details(quater):
+    try:
+        if quater == "Q1":
+            return {"success": True, "months": ["Jan", "Feb", "Mar"]}
+        elif quater == "Q2":
+            return {"success": True, "months": ["Apr", "May", "Jun"]}
+        elif quater == "Q3":
+            return {"success": True, "months": ["Jul", "Aug", "Sep"]}
+        elif quater == "Q4":
+            return {"success": True, "months": ["Oct", "Nov", "Dec"]}
+        else:
+            return {"success": False, "message": "quarter not found"} 
+    except Exception as e:
+        exc_type, exc_obj, exc_tb = sys.exc_info()
+        frappe.log_error("get_quarter_details", "line No:{}\n{}".format(
             exc_tb.tb_lineno, traceback.format_exc()))
         return {"success": False, "error": str(e)}

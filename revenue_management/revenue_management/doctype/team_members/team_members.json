@@ -97,7 +97,7 @@
    "options": "\nIndividual Contributor\nLeader"
   },
   {
-   "fetch_from": "team_roster.billing_marsha",
+   "fetch_from": "eid.billing_unit",
    "fieldname": "billing_marsha",
    "fieldtype": "Data",
    "label": "Billing Marsha"
@@ -150,7 +150,7 @@
  "hide_toolbar": 1,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-11-28 19:19:24.370901",
+ "modified": "2023-11-30 18:46:39.171353",
  "modified_by": "Administrator",
  "module": "Revenue Management",
  "name": "Team Members",

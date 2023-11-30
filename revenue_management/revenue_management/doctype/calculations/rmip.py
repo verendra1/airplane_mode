@@ -1,50 +1,62 @@
 import frappe
+import sys, traceback
 import pandas as pd
+from revenue_management.utlis import get_quarter_details
 
 
 @frappe.whitelist()
-def rmip_calculations(eid=None, month=None, year=None):
-    # try:
+def rmip_calculations(eid=None, quarter=None, year=None):
+    try:
         get_team_member = frappe.db.get_value("Team Members", {"eid": eid, "year": year}, ["name"])
         if get_team_member:
+            get_quarter = get_quarter_details(quarter)
+            if not get_quarter["success"]:
+                return get_quarter
             get_supporting_marsha = frappe.db.get_list("Supporting Marsha", filters={"parent": get_team_member}, pluck="marsha")
             if len(get_supporting_marsha) == 0:
                 return {"success": False, "message": "no supporting marsha assigned"}
             get_marsha_details = frappe.db.get_list("Marsha Details", filters=[["name", "in", get_supporting_marsha]], fields=["marsha", "market_share_type", "ms_comp_non_comp"])
-            get_goals_data = frappe.db.get_list("Goals", filters=[["month", "=", month], ["year", "=", year], ["marsha", "in", get_supporting_marsha], ["category", "in", ["RmRev", "Catering Rev", "RPI", "RevPAR"]]], fields=["category", "marsha","amount"])
+            get_goals_data = frappe.db.get_list("Goals", filters=[["month", "in", get_quarter["months"]], ["year", "=", year], ["marsha", "in", get_supporting_marsha], ["category", "in", ["RmRev", "Catering Rev", "RPI", "RevPAR"]]], fields=["category", "marsha","amount"])
             if len(get_goals_data) == 0:
                 return {"success": False, "message": "no goals found"}
-            get_productivity_data = frappe.db.get_list("Productivity", filters=[["month", "=", month], ["year", "=", year], ["marsha", "in", get_supporting_marsha], ["category", "in", ["RmRev", "Catering Rev", "RPI", "RevPAR"]]], fields=["category", "marsha","amount"])
+            get_productivity_data = frappe.db.get_list("Productivity", filters=[["month", "in", get_quarter["months"]], ["year", "=", year], ["marsha", "in", get_supporting_marsha], ["category", "in", ["RmRev", "Catering Rev", "RPI", "RevPAR"]]], fields=["category", "marsha","amount"])
+
             if len(get_productivity_data) == 0:
                 return {"success": False, "message": "no productivity found"}
             
             marsha_df = pd.DataFrame.from_records(get_marsha_details)
             goals_df = pd.DataFrame.from_records(get_goals_data)
             productivity_df = pd.DataFrame.from_records(get_productivity_data)
-
-            merge_goals_with_marshas = pd.merge(goals_df, marsha_df, on=["marsha"])
-            merge_productivity_with_marshas = pd.merge(productivity_df, marsha_df, on=["marsha"])
-
-            filter_rpi_in_goals = merge_goals_with_marshas.loc[(merge_goals_with_marshas['ms_comp_non_comp'] == 'Y') & (merge_goals_with_marshas['market_share_type'] == 'SB') & (merge_goals_with_marshas["category"] != "RevPar")]
-            filter_rpi_in_productivity = merge_productivity_with_marshas.loc[(merge_productivity_with_marshas['ms_comp_non_comp'] == 'Y') & (merge_productivity_with_marshas['market_share_type'] == 'SB') & (merge_productivity_with_marshas["category"] != "RevPar")]
-
-            filter_revpar_in_goals = merge_goals_with_marshas.loc[(merge_goals_with_marshas['ms_comp_non_comp'] != 'Y') & (merge_goals_with_marshas['market_share_type'] != 'SB') & (merge_goals_with_marshas["category"] != "RPI")]
-            filter_revpar_in_productivity = merge_productivity_with_marshas.loc[(merge_productivity_with_marshas['ms_comp_non_comp'] != 'Y') & (merge_productivity_with_marshas['market_share_type'] != 'SB') & (merge_productivity_with_marshas["category"] != "RPI")]
             
-            only_columns = ["category", "marsha", "amount"]
+            rmrev_catering_from_goals_df = goals_df.loc[goals_df['category'].isin(["RmRev", "Catering Rev"])]
+            rmrev_catering_from_productivity_df = productivity_df.loc[productivity_df['category'].isin(["RmRev", "Catering Rev"])]
 
-            if len(filter_rpi_in_goals) > 0:
-                pass
+            group_rmrev_catering_from_goals_df = rmrev_catering_from_goals_df.groupby(["marsha", "category"]).agg({"amount": "sum"}).reset_index()
 
-            if len(filter_revpar_in_goals) > 0 and len(filter_revpar_in_productivity) > 0:
-                filter_revpar_in_goals = filter_revpar_in_goals[only_columns]
-                filter_revpar_in_productivity = filter_revpar_in_productivity[only_columns]
+            group_rmrev_catering_from_productivity_df = rmrev_catering_from_productivity_df.groupby(["marsha", "category"]).agg({"amount": "sum"}).reset_index()
 
-                pivot_goals = pd.pivot_table(filter_revpar_in_goals, index= ['marsha'], columns = ['category'], values=['amount']).reset_index()
+            
+
+    #         merge_goals_with_marshas = pd.merge(goals_df, marsha_df, on=["marsha"])
+    #         merge_productivity_with_marshas = pd.merge(productivity_df, marsha_df, on=["marsha"])
+
+    #         filter_rpi_in_goals = merge_goals_with_marshas.loc[(merge_goals_with_marshas['ms_comp_non_comp'] == 'Y') & (merge_goals_with_marshas['market_share_type'] == 'SB') & (merge_goals_with_marshas["category"] != "RevPar")]
+    #         filter_rpi_in_productivity = merge_productivity_with_marshas.loc[(merge_productivity_with_marshas['ms_comp_non_comp'] == 'Y') & (merge_productivity_with_marshas['market_share_type'] == 'SB') & (merge_productivity_with_marshas["category"] != "RevPar")]
+
+    #         filter_revpar_in_goals = merge_goals_with_marshas.loc[(merge_goals_with_marshas['ms_comp_non_comp'] != 'Y') & (merge_goals_with_marshas['market_share_type'] != 'SB') & (merge_goals_with_marshas["category"] != "RPI")]
+    #         filter_revpar_in_productivity = merge_productivity_with_marshas.loc[(merge_productivity_with_marshas['ms_comp_non_comp'] != 'Y') & (merge_productivity_with_marshas['market_share_type'] != 'SB') & (merge_productivity_with_marshas["category"] != "RPI")]
+            
+    #         only_columns = ["category", "marsha", "amount"]
+
+    #         if len(filter_rpi_in_goals) > 0:
+    #             pass
+
+            if len(group_rmrev_catering_from_goals_df) > 0 and len(group_rmrev_catering_from_productivity_df) > 0:
+                pivot_goals = pd.pivot_table(group_rmrev_catering_from_goals_df, index= ['marsha'], columns = ['category'], values=['amount']).reset_index()
                 pivot_goals = pivot_goals.droplevel(0, axis=1)
                 pivot_goals.rename(columns = {"" : "marsha"}, inplace = True)
 
-                pivot_productivity = pd.pivot_table(filter_revpar_in_productivity, index= ['marsha'], columns = ['category'], values=['amount']).reset_index()
+                pivot_productivity = pd.pivot_table(group_rmrev_catering_from_productivity_df, index= ['marsha'], columns = ['category'], values=['amount']).reset_index()
                 pivot_productivity = pivot_productivity.droplevel(0, axis=1)
                 pivot_productivity.rename(columns = {"" : "marsha", "RmRev": "Productivity RmRev", "RevPAR": "Productivity RevPAR", "Catering Rev": "Productivity Catering Rev"}, inplace = True)
 
@@ -63,12 +75,18 @@ def rmip_calculations(eid=None, month=None, year=None):
                 merge_goals_productivity['catering_rev_earning'] = merge_goals_productivity.apply(lambda merge_goals_productivity: check_earnings(merge_goals_productivity["catering_rev_achieved"]), axis = 1)
 
                 get_particular_columns = merge_goals_productivity[["marsha", "rmrev_weightage", "catering_rev_weightage", "rmrev_earning", "catering_rev_earning"]]
+                get_particular_columns.set_index("marsha", inplace = True)
+                get_particular_columns["earning_sum"] = get_particular_columns[['rmrev_earning', 'catering_rev_earning']].sum(axis=1)
+                print(get_particular_columns.to_string())
 
 
                 
 
-    # except Exception as e:
-    #     pass
+    except Exception as e:
+        exc_type, exc_obj, exc_tb = sys.exc_info()
+        frappe.log_error("create_team_leader_as_user", "line No:{}\n{}".format(
+            exc_tb.tb_lineno, traceback.format_exc()))
+        return {"success": False, "error": str(e)}
 
 
 
