@@ -144,7 +144,7 @@ def create_user_for_team_member(data):
                 b2csuccess = frappe.get_doc('Email Template',"Team Leader Login Details")
                 message = b2csuccess.response
                 replace_first_name = message.replace("[first_name]", user_doc.first_name)
-                replace_email = replace_first_name.replace("[email_id]", user_doc.eid)
+                replace_email = replace_first_name.replace("[email_id]", user_doc.username)
                 send_mail_to_user(content=replace_email, email_id=user_doc.email, subject=b2csuccess.subject)
     except Exception as e:
         exc_type, exc_obj, exc_tb = sys.exc_info()
