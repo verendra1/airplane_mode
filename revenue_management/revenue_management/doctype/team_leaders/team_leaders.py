@@ -46,13 +46,13 @@ def create_team_leader_as_user(doc, method=None):
 def import_team_leader(file=None):
     try:
         if not file:
-            frappe.publish_realtime("data_import_error", {"data_import": 'Team Leader',"show_message": "file is missing in filters", "file": ""})
+            frappe.publish_realtime("data_import_error", {"data_import": 'Team Leader',"show_message": "file is missing in filters"})
             return {"success": False, "message": "file is missing in filters"}
         site_name = cstr(frappe.local.site)
         file_path = frappe.utils.get_bench_path() + "/sites/" + site_name + file
         excel_data_df = pd.read_excel(file_path)
         if len(excel_data_df) == 0:
-            frappe.publish_realtime("data_import_error", {"data_import": 'Team Leader',"show_message": "no data in the file", "file": ""})
+            frappe.publish_realtime("data_import_error", {"data_import": 'Team Leader',"show_message": "no data in the file"})
             return {"success": False, "message": "No data in the file"}
 
         team_leader_details = ["Revenue Leader",
@@ -136,7 +136,7 @@ def import_team_leader(file=None):
                 dataimport(file=file_upload["file"], import_type="Update Existing Records",
                             reference_doctype="Team Leaders")
             return {"success": True, "message": "Data Imported"}
-        frappe.publish_realtime("data_import_error", {"data_import": 'Team Leader',"show_message": "Some columns are missing in excel file.", "file": ""})
+        frappe.publish_realtime("data_import_error", {"data_import": 'Team Leader',"show_message": "Some columns are missing in excel file."})
         return {"success": False, "message": "Some columns are missing in excel file.", "missing_employees_file": ""}
     except Exception as e:
         exc_type, exc_obj, exc_tb = sys.exc_info()

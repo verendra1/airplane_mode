@@ -19,7 +19,7 @@ class Employees(Document):
 def employees_import(file=None):
 	try:
 		if not file:
-			frappe.publish_realtime("data_import_error", {"data_import": 'Employees',"show_message": "file is missing", "file": ""})
+			frappe.publish_realtime("data_import_error", {"data_import": 'Employees',"show_message": "file is missing"})
 			return {"success": False, "message": "file is missing"}
 		site_name = cstr(frappe.local.site)
 		file_path = frappe.utils.get_bench_path() + "/sites/" + site_name + file
@@ -76,7 +76,7 @@ def employees_import(file=None):
 							reference_doctype="Employees")
 
 			return {"success": True, "message": "Data Imported"}
-		frappe.publish_realtime("data_import_error", {"data_import": 'Employees',"show_message": "file is empty", "file": ""})
+		frappe.publish_realtime("data_import_error", {"data_import": 'Employees',"show_message": "file is empty"})
 		return {"success": False, "message": "file is empty"}
 	except Exception as e:
 		exc_type, exc_obj, exc_tb = sys.exc_info()

@@ -83,9 +83,9 @@ def import_properties(file=None):
                     dataimport(file=file_upload["file"], import_type="Update Existing Records",
                                reference_doctype="Marsha Details")
                 return {"success": True, "message": "Data Imported"}
-            frappe.publish_realtime("data_import_error", {"data_import": 'Marsha Details',"show_message": "no data found", "file": ""})
+            frappe.publish_realtime("data_import_error", {"data_import": 'Marsha Details',"show_message": "no data found"})
             return {"success": False, "message": "No data found"}
-        frappe.publish_realtime("data_import_error", {"data_import": 'Marsha Details',"show_message": "file mismatch.", "file": ""})
+        frappe.publish_realtime("data_import_error", {"data_import": 'Marsha Details',"show_message": "file mismatch."})
         return {"success": False, "message": "Some columns are missing in excel file."}
     except Exception as e:
         exc_type, exc_obj, exc_tb = sys.exc_info()

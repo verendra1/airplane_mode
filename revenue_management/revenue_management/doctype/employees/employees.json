@@ -25,7 +25,8 @@
   {
    "fieldname": "job_name",
    "fieldtype": "Data",
-   "label": "Job Name"
+   "label": "Job Name",
+   "reqd": 1
   },
   {
    "fieldname": "career_band",
@@ -35,7 +36,8 @@
   {
    "fieldname": "job_entry_date",
    "fieldtype": "Date",
-   "label": "Job Entry Date"
+   "label": "Job Entry Date",
+   "reqd": 1
   },
   {
    "fieldname": "work_email_address",
@@ -98,7 +100,7 @@
  "hide_toolbar": 1,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-11-29 13:41:09.250106",
+ "modified": "2023-12-01 12:43:26.527233",
  "modified_by": "Administrator",
  "module": "Revenue Management",
  "name": "Employees",
