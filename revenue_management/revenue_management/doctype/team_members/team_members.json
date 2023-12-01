@@ -44,6 +44,7 @@
    "options": "\nIndividual Contributor\nLeader"
   },
   {
+   "fetch_from": "eid.job_entry_date",
    "fieldname": "team_start_date",
    "fieldtype": "Date",
    "label": "Team Start Date"
@@ -150,7 +151,7 @@
  "hide_toolbar": 1,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-11-30 18:46:39.171353",
+ "modified": "2023-11-30 19:06:25.292041",
  "modified_by": "Administrator",
  "module": "Revenue Management",
  "name": "Team Members",
