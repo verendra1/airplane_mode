@@ -305,10 +305,10 @@ def import_goal_maintance(goal_file, hotel_break_down_file):
 			queue="short",
 			timeout=800000,
 			is_async=True,
-			now=True,
+			now=False,
 			goal_file = goal_file,
 			hotel_break_down_file = hotel_break_down_file,
-			event="insert_d110_data",
+			event="insert_goals_data",
 			job_name="Goal_Maintance_Import"
 		)
 		return {"success": True, "Message": "Goals Import Starts Soon"}
@@ -407,6 +407,7 @@ def extract_rpi_file(filename=None):
 		remove_grand_total.set_index('Marsha Code', inplace=True)
 		avail_df = remove_grand_total[['Tymktavail','RevPAR', 'Comp Set RevPAR Growth', 'Tymarravail', 'RPI']]
 		avail_df.rename(columns={'RevPAR': 'HBD RevPAR'}, inplace=True)
+		avail_df["RPI"] = (avail_df["RPI"]*100)+2
 		hotel_db_data = []
 		for each in ['Tymktavail','HBD RevPAR', 'Comp Set RevPAR Growth', 'Tymarravail', 'RPI']:
 			each_df = avail_df[each]

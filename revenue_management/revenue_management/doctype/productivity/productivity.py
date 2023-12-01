@@ -7,6 +7,7 @@ import numpy as np
 import sys, traceback
 from frappe.utils import cstr
 from frappe.model.document import Document
+from frappe.utils.background_jobs import enqueue
 from revenue_management.utlis import dataimport, upload_file_api
 from revenue_management.revenue_management.doctype.goals.goals import extract_rpi_file
 
@@ -16,7 +17,7 @@ class Productivity(Document):
 
 
 @frappe.whitelist()
-def import_productivity(file=None, rpi_file=None, month=None, year=None):
+def productivity_data_import(file=None, rpi_file=None, month=None, year=None):
 	try:
 		if not file and not rpi_file and not month and not year:
 			return {"success": False, "message": "file or return_period is missing in filters"}
@@ -63,6 +64,30 @@ def import_productivity(file=None, rpi_file=None, month=None, year=None):
 		exc_type, exc_obj, exc_tb = sys.exc_info()
 		frappe.log_error("import_properties_team_leaders", "line No:{}\n{}".format(
             exc_tb.tb_lineno, traceback.format_exc()))
+		return {"success": False, "error": str(e)}
+
+
+@frappe.whitelist()
+def import_productivity(file=None, rpi_file=None, month=None, year=None):
+	try:
+		enqueue(
+			productivity_data_import,  
+			queue="short",
+			timeout=800000,
+			is_async=True,
+			now=False,
+			file = file,
+			rpi_file = rpi_file,
+			month = month,
+			year = year,
+			event="insert_productivity_data",
+			job_name="Productivity_Maintance_Import"
+		)
+		return {"success": True, "Message": "Goals Import Starts Soon"}
+	except Exception as e:
+		exc_type, exc_obj, exc_tb = sys.exc_info()
+		frappe.log_error("import_productivity", "line No:{}\n{}".format(
+			exc_tb.tb_lineno, traceback.format_exc()))
 		return {"success": False, "error": str(e)}
 
 
