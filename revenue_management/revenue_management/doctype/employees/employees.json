@@ -94,13 +94,14 @@
   {
    "fieldname": "billing_unit",
    "fieldtype": "Data",
-   "label": "Billing Unit"
+   "label": "Billing Unit",
+   "reqd": 1
   }
  ],
  "hide_toolbar": 1,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-12-01 12:43:26.527233",
+ "modified": "2023-12-01 15:03:21.928818",
  "modified_by": "Administrator",
  "module": "Revenue Management",
  "name": "Employees",

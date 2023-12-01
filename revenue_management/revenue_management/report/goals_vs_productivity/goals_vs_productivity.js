@@ -5,11 +5,11 @@
 frappe.query_reports["Goals Vs Productivity"] = {
 	"filters": [
 		{
-			fieldname: "month",
-			label: __("Month"),
+			fieldname: "quarter",
+			label: __("Quarter"),
 			fieldtype: "Select",
-			default: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov","Dec"],
-			options: ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],
+			default: ["Q1", "Q2", "Q3", "Q4"],
+			options: ["Q1", "Q2", "Q3", "Q4"],
 			"reqd": 1
 		},
 		{

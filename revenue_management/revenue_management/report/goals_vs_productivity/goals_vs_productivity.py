@@ -5,6 +5,7 @@ import frappe
 import sys, traceback
 import pandas as pd
 import numpy as np
+from revenue_management.utlis import get_quarter_details
 
 
 def execute(filters=None):
@@ -15,6 +16,7 @@ def execute(filters=None):
 
 def goal_vs_productivity(filters):
     try:
+        
         get_goals = frappe.db.get_list("Goals", filters=filters, fields=["marsha", "category", "amount"])
         get_productivity  = frappe.db.get_list("Productivity", filters=filters, fields=["marsha", "category", "amount as productivity_amount"])
         if len(get_productivity) == 0 or len(get_goals) == 0:
@@ -55,9 +57,10 @@ def goal_vs_productivity(filters):
         merge_both = merge_both.round(decimals = 2)
         merge_both.replace(np.nan,0, inplace=True)
         merge_both = merge_both[["marsha", "productivity_RmRev", "RmRev", "rmrev_weightage", "productivity_Catering_Rev","Catering Rev", "catering_rev_weightage", "productivity_RevPAR", "RevPAR", "revpar_weightage", "productivity_RPI", "RPI", "rpi_weightage"]]
+        split_goals_df = merge_both[["marsha", "productivity_RmRev", "RmRev", "rmrev_weightage"]]
         # merge_both.to_excel("/home/caratred/test.xlsx", index=False)
-        data = merge_both.to_dict('records')
-        return data
+        # data = merge_both.to_dict('records')
+        # return data
     except Exception as e:
         exc_type, exc_obj, exc_tb = sys.exc_info()
         frappe.log_error("goal_vs_productivity", "line No:{}\n{}".format(exc_tb.tb_lineno, traceback.format_exc()))
