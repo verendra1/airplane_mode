@@ -109,7 +109,7 @@ def get_productivity(month=None, year=None):
 		merge_df = pd.merge(piovt_df, marsha_df, on=["marsha"])
 		rpi = merge_df.loc[(merge_df['ms_comp_non_comp'] == 'Y') & (merge_df['market_share_type'] == 'SB')]
 		rpi_df = rpi[["marsha", "Catering_Rev", "RmRev", "RPI"]]
-		revpar = merge_df.loc[(merge_df['ms_comp_non_comp'] != 'Y') & (merge_df['market_share_type'] != 'SB')]
+		revpar = merge_df.loc[(merge_df['ms_comp_non_comp'] != 'Y') | (merge_df['market_share_type'] != 'SB')]
 		revpar_df = revpar[["marsha", "Catering_Rev", "RmRev", "RevPAR"]]
 		final_df = pd.concat([empty_dataframe, rpi_df, revpar_df])
 		final_df.replace(np.nan,0, inplace=True)
