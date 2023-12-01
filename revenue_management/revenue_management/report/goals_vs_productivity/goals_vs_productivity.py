@@ -16,7 +16,6 @@ def execute(filters=None):
 
 def goal_vs_productivity(filters):
     try:
-        
         get_goals = frappe.db.get_list("Goals", filters=filters, fields=["marsha", "category", "amount"])
         get_productivity  = frappe.db.get_list("Productivity", filters=filters, fields=["marsha", "category", "amount as productivity_amount"])
         if len(get_productivity) == 0 or len(get_goals) == 0:
