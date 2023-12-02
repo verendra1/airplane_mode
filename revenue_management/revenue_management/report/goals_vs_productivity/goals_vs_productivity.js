@@ -5,6 +5,13 @@
 frappe.query_reports["Goals Vs Productivity"] = {
 	"filters": [
 		{
+			fieldname: "marsha",
+			label: __("Marsha"),
+			fieldtype: "Link",
+			options: "Marsha Details",
+			"reqd": 1,
+		},
+		{
 			fieldname: "quarter",
 			label: __("Quarter"),
 			fieldtype: "Select",

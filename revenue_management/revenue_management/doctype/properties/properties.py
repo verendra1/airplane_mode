@@ -27,14 +27,14 @@ def import_properties(file=None):
         file_path = frappe.utils.get_bench_path() + "/sites/" + site_name + file
         excel_data_df = pd.read_excel(file_path)
         if len(excel_data_df) == 0:
-            frappe.publish_realtime("data_import_error", {"data_import": 'Marsha Details',"show_message": "no data in the file"})
+            frappe.publish_realtime("data_import_error", {"data_import": 'Marsha Details',"show_message": "no data in the file", "user": frappe.session.user})
             return {"success": False, "message": "No data in the file"}
         masha_details_columns = ["MARSHA", "Property Name on Tableau", "Status", "Area", "ADRS", "City",
                                  "Team Name", "Currency", "Country", "Market Share Type", "Market Share Comp", "Team Type", "Billing Unit"]
         if set(masha_details_columns).issubset(excel_data_df.columns):
             cluster_details = get_cluster_details()
             if not cluster_details["success"]:
-                frappe.publish_realtime("data_import_error", {"data_import": 'Marsha Details',"show_message": cluster_details["message"]})
+                frappe.publish_realtime("data_import_error", {"data_import": 'Marsha Details',"show_message": cluster_details["message"], "user": frappe.session.user})
                 return cluster_details
             get_masha_list = frappe.db.get_list("Marsha Details", pluck="name")
             masha_details_df = excel_data_df[masha_details_columns]
@@ -50,7 +50,7 @@ def import_properties(file=None):
                         filename=missing_clusters_file)
                     if not cluser_file_upload["success"]:
                         return cluser_file_upload
-                    frappe.publish_realtime("data_import_error", {"data_import": 'Marsha Details',"show_message": "missing cluster detials for some properties", "file": cluser_file_upload["file"]})
+                    frappe.publish_realtime("data_import_error", {"data_import": 'Marsha Details',"show_message": "missing cluster detials for some properties", "file": cluser_file_upload["file"], "user": frappe.session.user})
                     return {"success": False, "message": "missing cluster detials for some properties", "file": cluser_file_upload["file"]}
                 # remove_missing_cluster_properties =  masha_details_df[masha_details_df["Team Name"].isin(cluster_details["data"])]
                 remove_existing_masha_data_df = masha_details_df[~masha_details_df["MARSHA"].isin(
@@ -83,15 +83,15 @@ def import_properties(file=None):
                     dataimport(file=file_upload["file"], import_type="Update Existing Records",
                                reference_doctype="Marsha Details")
                 return {"success": True, "message": "Data Imported"}
-            frappe.publish_realtime("data_import_error", {"data_import": 'Marsha Details',"show_message": "no data found"})
+            frappe.publish_realtime("data_import_error", {"data_import": 'Marsha Details',"show_message": "no data found", "user": frappe.session.user})
             return {"success": False, "message": "No data found"}
-        frappe.publish_realtime("data_import_error", {"data_import": 'Marsha Details',"show_message": "file mismatch."})
+        frappe.publish_realtime("data_import_error", {"data_import": 'Marsha Details',"show_message": "file mismatch.", "user": frappe.session.user})
         return {"success": False, "message": "Some columns are missing in excel file."}
     except Exception as e:
         exc_type, exc_obj, exc_tb = sys.exc_info()
         frappe.log_error("import_properties", "line No:{}\n{}".format(
             exc_tb.tb_lineno, traceback.format_exc()))
-        return {"success": False, "error": str(e)}
+        return {"success": False, "message": str(e)}
 
 
 @frappe.whitelist()
@@ -112,4 +112,4 @@ def import_properties_team_leaders(file=None):
         exc_type, exc_obj, exc_tb = sys.exc_info()
         frappe.log_error("import_properties_team_leaders", "line No:{}\n{}".format(
             exc_tb.tb_lineno, traceback.format_exc()))
-        return {"success": False, "error": str(e)}
+        return {"success": False, "message": str(e)}

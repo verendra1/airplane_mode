@@ -70,7 +70,7 @@ def create_team(data):
         exc_type, exc_obj, exc_tb = sys.exc_info()
         frappe.log_error("create_team", "line No:{}\n{}".format(
             exc_tb.tb_lineno, traceback.format_exc()))
-        return {"success": False, "error": str(e)}
+        return {"success": False, "message": str(e)}
 
 
 def create_team_roster(data={}):
@@ -90,7 +90,7 @@ def create_team_roster(data={}):
         exc_type, exc_obj, exc_tb = sys.exc_info()
         frappe.log_error("create_team_roster", "line No:{}\n{}".format(
             exc_tb.tb_lineno, traceback.format_exc()))
-        return {"success": False, "error": str(e)}
+        return {"success": False, "message": str(e)}
 
 
 def create_team_members(data={}):
@@ -110,7 +110,7 @@ def create_team_members(data={}):
         exc_type, exc_obj, exc_tb = sys.exc_info()
         frappe.log_error("create_team_members", "line No:{}\n{}".format(
             exc_tb.tb_lineno, traceback.format_exc()))
-        return {"success": False, "error": str(e)}
+        return {"success": False, "message": str(e)}
 
 
 @frappe.whitelist()
@@ -129,7 +129,7 @@ def get_team_roster_details(cluster=None):
         exc_type, exc_obj, exc_tb = sys.exc_info()
         frappe.log_error("get_team_roster_details", "line No:{}\n{}".format(
             exc_tb.tb_lineno, traceback.format_exc()))
-        return {"success": False, "error": str(e)}
+        return {"success": False, "message": str(e)}
 
 
 def create_user_for_team_member(data):
@@ -153,7 +153,7 @@ def create_user_for_team_member(data):
         exc_type, exc_obj, exc_tb = sys.exc_info()
         frappe.log_error("create_user_for_team_member", "line No:{}\n{}".format(
             exc_tb.tb_lineno, traceback.format_exc()))
-        return {"success": False, "error": str(e)}
+        return {"success": False, "message": str(e)}
     
 
 @frappe.whitelist()
@@ -230,4 +230,4 @@ def check_role_effective_date(job_date=None, job_name=None):
         exc_type, exc_obj, exc_tb = sys.exc_info()
         frappe.log_error("check_role_effective_date", "line No:{}\n{}".format(
             exc_tb.tb_lineno, traceback.format_exc()))
-        return {"success": False, "error": str(e)}
+        return {"success": False, "message": str(e)}

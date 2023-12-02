@@ -232,7 +232,7 @@ def old_goal_maintance(goal_file, hotel_break_down_file):
 		exc_type, exc_obj, exc_tb = sys.exc_info()
 		frappe.log_error("goal_maintance", "line No:{}\n{}".format(
 			exc_tb.tb_lineno, traceback.format_exc()))
-		return {"success": False, "error": str(e)}
+		return {"success": False, "message": str(e)}
 	
 
 def goal_maintance(goal_file, hotel_break_down_file):
@@ -244,6 +244,8 @@ def goal_maintance(goal_file, hotel_break_down_file):
 		if len(get_marsha_details) == 0:
 			return {"success": False, "marsha": "Marsha details are empty"}
 		marsha_df = pd.DataFrame.from_records(get_marsha_details)
+		rpi_marshas = marsha_df.loc[(marsha_df['ms_comp_non_comp'] == 'Y') & (marsha_df['market_share_type'] == 'SB')]
+		rpi_marshas_list = rpi_marshas["marsha"].to_list()
 
 		df = pd.read_excel(file_path)
 		removed_unmaed_columns = df.loc[:, ~
@@ -272,11 +274,13 @@ def goal_maintance(goal_file, hotel_break_down_file):
 				goals_data.extend(
 					list(map(lambda x: {**x, "marsha": key}, value)))
 		goals_df = pd.DataFrame.from_records(goals_data)
+		rpi_goals_df = goals_df.loc[(goals_df["marsha"].isin(rpi_marshas_list)) & (goals_df["category"] != "RevPAR")]
+		revpar_goals_df = goals_df.loc[~(goals_df["marsha"].isin(rpi_marshas_list))]
 		get_rpi_data = extract_rpi_file(filename=hotel_break_down_file)
 		if not get_rpi_data["success"]:
 			return get_rpi_data
 		hotel_df = pd.DataFrame.from_records(get_rpi_data["data"])
-		final_df = pd.concat([goals_df, hotel_df])
+		final_df = pd.concat([rpi_goals_df, revpar_goals_df, hotel_df])
 		final_df["Year"] = datetime.datetime.now().year
 		final_df["amount"].replace(np.nan,0, inplace=True)
 		goal_file_name = frappe.utils.get_bench_path() + "/sites/" + site_name + \
@@ -294,7 +298,7 @@ def goal_maintance(goal_file, hotel_break_down_file):
 		exc_type, exc_obj, exc_tb = sys.exc_info()
 		frappe.log_error("goal_maintance", "line No:{}\n{}".format(
 			exc_tb.tb_lineno, traceback.format_exc()))
-		return {"success": False, "error": str(e)}
+		return {"success": False, "message": str(e)}
 
 
 @frappe.whitelist()
@@ -316,31 +320,26 @@ def import_goal_maintance(goal_file, hotel_break_down_file):
 		exc_type, exc_obj, exc_tb = sys.exc_info()
 		frappe.log_error("import_goal_maintance", "line No:{}\n{}".format(
 			exc_tb.tb_lineno, traceback.format_exc()))
-		return {"success": False, "error": str(e)}
+		return {"success": False, "message": str(e)}
 	
 
 @frappe.whitelist()
 def get_goals(marsha=None, year=None):
 	try:
-		get_marsha_details =  frappe.db.get_value("Marsha Details", {"marsha": marsha}, ["marsha", "market_share_type", "ms_comp_non_comp"], as_dict=True)
-		get_goals = frappe.db.get_list("Goals", filters={"marsha": marsha, "year": year}, fields=["category", "month", "amount"])
+		get_goals = frappe.db.get_list("Goals", filters={"marsha": marsha, "year": year, "category": ["in", ["Catering Rev", "RPI", "RevPAR", "RmRev"]]}, fields=["category", "month", "amount"])
 		if len(get_goals) == 0:
 			return {"success": False, "message": "No data found"}
-		empty_dataframe = pd.DataFrame(columns=["month", "Catering_Rev", "AVAILRMS_TY", "RPI", "RevPAR", "RmRev"])
+		empty_dataframe = pd.DataFrame(columns=["month", "Catering_Rev", "RPI", "RevPAR", "RmRev"])
 		df = pd.DataFrame.from_records(get_goals)
 		group_df = df.groupby("category").agg({"amount": "sum"})
 		group_df.replace(np.nan,0, inplace=True)
 		sum_data = group_df.to_dict()
-		remaining_sum_data = {each:0 for each in ["Catering Rev", "AVAILRMS_TY", "RPI", "RevPAR", "RmRev"] if each not in sum_data["amount"]}
+		remaining_sum_data = {each:0 for each in ["Catering Rev", "RPI", "RevPAR", "RmRev"] if each not in sum_data["amount"]}
 		sum_data = sum_data["amount"] | remaining_sum_data
 		piovt_df = pd.pivot_table(df, index= ['month'], columns = ['category'], values=['amount']).reset_index()
 		# piovt_df.columns = piovt_df.iloc[0]
 		piovt_df = piovt_df.droplevel(0, axis=1)
 		piovt_df.rename(columns = {"" : "month", "Catering Rev":"Catering_Rev"}, inplace = True)
-		if get_marsha_details["market_share_type"] == 'SB' and get_marsha_details["ms_comp_non_comp"] == 'Y':
-			piovt_df = piovt_df[["month", "Catering_Rev", "AVAILRMS_TY", "RPI", "RmRev"]]
-		else:
-			piovt_df = piovt_df[["month", "Catering_Rev", "AVAILRMS_TY", "RevPAR", "RmRev"]]
 		final_df = pd.concat([empty_dataframe, piovt_df])
 		final_df.replace(np.nan,0, inplace=True)
 		months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", 
@@ -353,7 +352,7 @@ def get_goals(marsha=None, year=None):
 		exc_type, exc_obj, exc_tb = sys.exc_info()
 		frappe.log_error("get_goals", "line No:{}\n{}".format(
 			exc_tb.tb_lineno, traceback.format_exc()))
-		return {"success": False, "error": str(e)}
+		return {"success": False, "message": str(e)}
 
 @frappe.whitelist()
 def get_goals_for_update(month=None, year=None, marsha=None):
@@ -371,7 +370,7 @@ def get_goals_for_update(month=None, year=None, marsha=None):
 		exc_type, exc_obj, exc_tb = sys.exc_info()
 		frappe.log_error("get_goals_for_update", "line No:{}\n{}".format(
 			exc_tb.tb_lineno, traceback.format_exc()))
-		return {"success": False, "error": str(e)}
+		return {"success": False, "message": str(e)}
 	
 
 @frappe.whitelist()
@@ -387,31 +386,39 @@ def update_goals(data=[], month=None, year=None, marsha=None):
 		exc_type, exc_obj, exc_tb = sys.exc_info()
 		frappe.log_error("update_goals", "line No:{}\n{}".format(
 			exc_tb.tb_lineno, traceback.format_exc()))
-		return {"success": False, "error": str(e)}
+		return {"success": False, "message": str(e)}
 
 
 def extract_rpi_file(filename=None):
 	try:
+		get_rpi_marshas = frappe.db.get_list("Marsha Details", filters={"market_share_type": "Y", "market_share_type": "SB"}, pluck="name")
 		site_name = cstr(frappe.local.site)
 		hotel_break_down = frappe.utils.get_bench_path() + "/sites/" + site_name + filename
-		hotel_bd_df = pd.read_excel(hotel_break_down, skiprows=1)
-		hotel_bd_df['Unnamed: 0'] = hotel_bd_df['Unnamed: 0'].replace(np.nan, "marsha")
+		hotel_bd_df = pd.read_excel(hotel_break_down)
 		removed_unmaed_columns_of_hotel_db = hotel_bd_df.loc[:, ~
 										hotel_bd_df.columns.str.contains('^Unnamed')]
-		# removed_duplicate_columns_hotel_db = removed_unmaed_columns_of_hotel_db.loc[:,
-		# 													   ~removed_unmaed_columns_of_hotel_db.columns.str.contains('.1')]
+		# # removed_duplicate_columns_hotel_db = removed_unmaed_columns_of_hotel_db.loc[:,
+		# # 													   ~removed_unmaed_columns_of_hotel_db.columns.str.contains('.1')]
 		dates = list(removed_unmaed_columns_of_hotel_db.columns)
+		columns = hotel_bd_df.columns.to_list()
+		if len(dates) > 0:
+			if dates[-1].isnumeric():
+				ind = columns.index(dates[-1])
+				main_columns = columns[:ind]
+				hotel_bd_df = hotel_bd_df[main_columns]
+				del dates[-1]
 		hotel_bd_df.columns = hotel_bd_df.iloc[0]
 		hotel_bd_df = hotel_bd_df[1:]
 		remove_grand_total = hotel_bd_df[hotel_bd_df["Marsha Code"] != "Grand Total"]
-		remove_grand_total.set_index('Marsha Code', inplace=True)
-		avail_df = remove_grand_total[['Tymktavail','RevPAR', 'Comp Set RevPAR Growth', 'Tymarravail', 'RPI']]
+		only_rpi_marsha_data = remove_grand_total.loc[remove_grand_total["Marsha Code"].isin(get_rpi_marshas)]
+		only_rpi_marsha_data.set_index('Marsha Code', inplace=True)
+		avail_df = only_rpi_marsha_data[['Tymktavail','RevPAR', 'Comp Set RevPAR', 'Tymarravail', 'RPI']]
 		avail_df.rename(columns={'RevPAR': 'HBD RevPAR'}, inplace=True)
 		avail_df["RPI"] = (avail_df["RPI"]*100)+2
 		hotel_db_data = []
-		for each in ['Tymktavail','HBD RevPAR', 'Comp Set RevPAR Growth', 'Tymarravail', 'RPI']:
+		for each in ['Tymktavail','HBD RevPAR', 'Comp Set RevPAR', 'Tymarravail', 'RPI']:
 			each_df = avail_df[each]
-			months = [datetime.datetime.strptime(value, '%m').strftime('%b') for value in dates]
+			months = [datetime.datetime.strptime(value, '%B %Y').strftime('%b') for value in dates]
 			each_df = each_df.set_axis(months, axis=1)
 			converted_hotel_df = each_df.apply(lambda x: x.apply(
 					lambda y: {"month": x.name, "amount": y, "category": each}), axis=0)
@@ -427,4 +434,4 @@ def extract_rpi_file(filename=None):
 		exc_type, exc_obj, exc_tb = sys.exc_info()
 		frappe.log_error("extract_rpi_file", "line No:{}\n{}".format(
 			exc_tb.tb_lineno, traceback.format_exc()))
-		return {"success": False, "error": str(e)}
+		return {"success": False, "message": str(e)}

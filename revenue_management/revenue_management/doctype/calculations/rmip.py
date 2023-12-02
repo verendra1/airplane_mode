@@ -77,7 +77,6 @@ def rmip_calculations(eid=None, quarter=None, year=None):
                 get_particular_columns = merge_goals_productivity[["marsha", "rmrev_weightage", "catering_rev_weightage", "rmrev_earning", "catering_rev_earning"]]
                 get_particular_columns.set_index("marsha", inplace = True)
                 get_particular_columns["earning_sum"] = get_particular_columns[['rmrev_earning', 'catering_rev_earning']].sum(axis=1)
-                print(get_particular_columns.to_string())
 
 
                 
@@ -86,7 +85,7 @@ def rmip_calculations(eid=None, quarter=None, year=None):
         exc_type, exc_obj, exc_tb = sys.exc_info()
         frappe.log_error("create_team_leader_as_user", "line No:{}\n{}".format(
             exc_tb.tb_lineno, traceback.format_exc()))
-        return {"success": False, "error": str(e)}
+        return {"success": False, "message": str(e)}
 
 
 

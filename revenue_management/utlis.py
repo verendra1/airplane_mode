@@ -27,7 +27,7 @@ def dataimport(file=None, import_type=None, reference_doctype=None):
         exc_type, exc_obj, exc_tb = sys.exc_info()
         frappe.log_error("dataimport", "line No:{}\n{}".format(
             exc_tb.tb_lineno, traceback.format_exc()))
-        return {"success": False, "error": str(e)}
+        return {"success": False, "message": str(e)}
     
 
 def upload_file_api(filename = None):
@@ -51,7 +51,7 @@ def upload_file_api(filename = None):
         exc_type, exc_obj, exc_tb = sys.exc_info()
         frappe.log_error("upload_file_api", "line No:{}\n{}".format(
             exc_tb.tb_lineno, traceback.format_exc()))
-        return {"success": False, "error": str(e)}
+        return {"success": False, "message": str(e)}
 
 
 
@@ -117,7 +117,7 @@ def create_user(email=None, user_name=None, first_name=None, last_name=None, rol
         exc_type, exc_obj, exc_tb = sys.exc_info()
         frappe.log_error("create_user", "line No:{}\n{}".format(
             exc_tb.tb_lineno, traceback.format_exc()))
-        return {"success": False, "error": str(e)}
+        return {"success": False, "message": str(e)}
 
 
 def send_mail_to_user(content, email_id, subject):
@@ -134,7 +134,7 @@ def send_mail_to_user(content, email_id, subject):
         exc_type, exc_obj, exc_tb = sys.exc_info()
         frappe.log_error("send_mail_to_user", "line No:{}\n{}".format(
             exc_tb.tb_lineno, traceback.format_exc()))
-        return {"success": False, "error": str(e)}
+        return {"success": False, "message": str(e)}
 
 
 def get_current_quarter_months():
@@ -153,7 +153,7 @@ def get_current_quarter_months():
         exc_type, exc_obj, exc_tb = sys.exc_info()
         frappe.log_error("get_current_quarter_months", "line No:{}\n{}".format(
             exc_tb.tb_lineno, traceback.format_exc()))
-        return {"success": False, "error": str(e)}
+        return {"success": False, "message": str(e)}
 
 
 @frappe.whitelist()
@@ -167,7 +167,7 @@ def get_cluster_details():
         exc_type, exc_obj, exc_tb = sys.exc_info()
         frappe.log_error("get_cluster_details", "line No:{}\n{}".format(
             exc_tb.tb_lineno, traceback.format_exc()))
-        return {"success": False, "error": str(e)}
+        return {"success": False, "message": str(e)}
 
 
 def get_quarter_details(quater):
@@ -186,4 +186,4 @@ def get_quarter_details(quater):
         exc_type, exc_obj, exc_tb = sys.exc_info()
         frappe.log_error("get_quarter_details", "line No:{}\n{}".format(
             exc_tb.tb_lineno, traceback.format_exc()))
-        return {"success": False, "error": str(e)}
+        return {"success": False, "message": str(e)}

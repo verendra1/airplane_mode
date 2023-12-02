@@ -29,4 +29,4 @@ def create_approver_as_user(doc, method=None):
         exc_type, exc_obj, exc_tb = sys.exc_info()
         frappe.log_error("create_team_leader_as_user", "line No:{}\n{}".format(
             exc_tb.tb_lineno, traceback.format_exc()))
-        return {"success": False, "error": str(e)}
+        return {"success": False, "message": str(e)}
