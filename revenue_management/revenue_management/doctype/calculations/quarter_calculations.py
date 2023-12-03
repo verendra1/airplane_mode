@@ -23,29 +23,47 @@ def quarter_rpi_calculations(df):
 
 def quarter_rpi_calculations_goals_vs_prod(goals_df, productivity_df):
 	try:
+		goals_data_after_calc = pd.DataFrame()
 		goals_df_data = goals_df.loc[(goals_df["category"].isin(["Tymarravail", "Comp Set RevPAR", "Tymktavail", "HBD RevPAR"]))]
-		productivity_df_data = productivity_df.loc[(productivity_df["category"].isin(["Tymarravail", "Comp Set RevPAR", "Tymktavail", "HBD RevPAR"]))]
-		productivity_df_data.rename(columns = {"productivity_amount": "amount"}, inplace=True)
+		if len(goals_df_data) > 0:
 
-		goals_quater_rpi_calculations = quarter_rpi_calculations(goals_df_data)
-		if not goals_quater_rpi_calculations["success"]: 
-			return goals_quater_rpi_calculations
-		
-		goals_data_after_calc = goals_quater_rpi_calculations["df"]
+			goals_quater_rpi_calculations = quarter_rpi_calculations(goals_df_data)
+			if not goals_quater_rpi_calculations["success"]: 
+				return goals_quater_rpi_calculations
+			
+			goals_data_after_calc = goals_quater_rpi_calculations["df"]
+			goals_data_after_calc.rename(columns={"quarter_rpi": "goal"}, inplace=True)
 		
 		# goals_calc = goals_data_after_calc[["RPI"]].T
 		# goals_reset_index = goals_calc.reset_index()
 		# goals_reset_index.rename(columns = {0 : "goal"}, inplace = True)
+		prod_quater_after_calc = pd.DataFrame()
+		productivity_df_data = productivity_df.loc[(productivity_df["category"].isin(["Tymarravail", "Comp Set RevPAR", "Tymktavail", "HBD RevPAR"]))]
+		if len(productivity_df_data) > 0:
+			
+			productivity_df_data.rename(columns = {"productivity_amount": "amount"}, inplace=True)
 
-		prod_quater_rpi_calculations = quarter_rpi_calculations(productivity_df_data)
-		if not prod_quater_rpi_calculations["success"]: 
-			return prod_quater_rpi_calculations
-		
-		prod_quater_after_calc = prod_quater_rpi_calculations["df"]
-		
-		merge_goals_productivity = pd.merge(goals_data_after_calc, prod_quater_after_calc, on=["marsha"], how="outer")
-		merge_goals_productivity["achieved"] = (merge_goals_productivity["quarter_rpi_y"]/merge_goals_productivity["quarter_rpi_x"])*100
-		merge_goals_productivity.rename(columns = {"quarter_rpi_x" : "goal", "quarter_rpi_y": "productivity"}, inplace = True)
+			prod_quater_rpi_calculations = quarter_rpi_calculations(productivity_df_data)
+			if not prod_quater_rpi_calculations["success"]: 
+				return prod_quater_rpi_calculations
+			
+			prod_quater_after_calc = prod_quater_rpi_calculations["df"]
+			prod_quater_after_calc.rename(columns={"quarter_rpi": "productivity"}, inplace=True)
+		if len(goals_df_data) > 0 and len(productivity_df_data) > 0:
+			merge_goals_productivity = pd.merge(goals_data_after_calc, prod_quater_after_calc, on=["marsha"], how="outer")
+		else:
+			if len(goals_df_data) == 0 and len(productivity_df_data) > 0:
+				merge_goals_productivity = prod_quater_after_calc
+			elif len(goals_df_data) >0 and len(productivity_df_data) == 0:
+				merge_goals_productivity = goals_data_after_calc
+			else:
+				return {"success": False, "message": "No data found"}
+		if "goal" not in merge_goals_productivity.columns.to_list():
+			merge_goals_productivity["goal"] = 0.0
+		if "productivity" not in merge_goals_productivity.columns.to_list():
+			merge_goals_productivity["productivity"] = 0.0
+		merge_goals_productivity["achieved"] = (merge_goals_productivity["goal"]/merge_goals_productivity["productivity"])*100
+		# merge_goals_productivity.rename(columns = {"quarter_rpi_x" : "goal", "quarter_rpi_y": "productivity"}, inplace = True)
 		merge_goals_productivity = merge_goals_productivity.round(decimals = 2)
 		merge_goals_productivity["category"] = "RPI"
 		merge_goals_productivity.drop('marsha', axis=1, inplace=True)

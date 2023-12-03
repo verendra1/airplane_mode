@@ -56,7 +56,7 @@ def goal_vs_productivity(filters):
 		productivity_df_data = productivity_df.loc[(productivity_df["category"].isin(
 			["Tymarravail", "Comp Set RevPAR", "Tymktavail", "HBD RevPAR"]))]
 
-		if len(goals_df_data) > 0 and len(productivity_df_data) > 0:
+		if len(goals_df_data) > 0 or len(productivity_df_data) > 0:
 			goals_quater_rpi_cal = quarter_rpi_calculations_goals_vs_prod(
 				goals_df, productivity_df)
 			if not goals_quater_rpi_cal["success"]:
