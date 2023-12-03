@@ -20,10 +20,10 @@ class Productivity(Document):
 def productivity_data_import(file=None, rpi_file=None, month=None, year=None):
 	try:
 		if not file and not rpi_file and not month and not year:
-			return {"success": False, "message": "file or return_period is missing in filters"}
+			return {"success": False, "message": "The filters lack either the file or return_period."}
 		get_marsha_details = frappe.db.get_all("Marsha Details",  fields=["name as marsha", "market_share_type", "ms_comp_non_comp", "team_type", "cluster"])
 		if len(get_marsha_details) == 0:
-			return {"success": False, "marsha": "Marsha details are empty"}
+			return {"success": False, "message": "Kindly import Marsha's details; no information for Marsha is present."}
 		marsha_df = pd.DataFrame.from_records(get_marsha_details)
 		rpi_marshas = marsha_df.loc[(marsha_df['ms_comp_non_comp'] == 'Y') & (marsha_df['market_share_type'] == 'SB')]
 		rpi_marshas_list = rpi_marshas["marsha"].to_list()
@@ -32,7 +32,7 @@ def productivity_data_import(file=None, rpi_file=None, month=None, year=None):
 		file_path = frappe.utils.get_bench_path() + "/sites/" + site_name + file
 		excel_data_df = pd.read_excel(file_path)
 		if len(excel_data_df) == 0:
-			return {"success": False, "message": "No data in the file"}
+			return {"success": False, "message": "The file contains no data."}
 		empty_df = pd.DataFrame()
 		productivity_df = excel_data_df[[
 			"MARSHA_NEW", "Catering Rev.", "RevPAR", "Room Rev."]]
@@ -66,7 +66,7 @@ def productivity_data_import(file=None, rpi_file=None, month=None, year=None):
 		frappe.db.commit()
 		dataimport(file=file_upload["file"], import_type="Insert New Records",
 				reference_doctype="Productivity")
-		return {"success": True, "message": "file uploaded successfully"}
+		return {"success": True, "message": "The file has been successfully uploaded."}
 	except Exception as e:
 		exc_type, exc_obj, exc_tb = sys.exc_info()
 		frappe.log_error("import_properties_team_leaders", "line No:{}\n{}".format(
@@ -90,7 +90,7 @@ def import_productivity(file=None, rpi_file=None, month=None, year=None):
 			event="insert_productivity_data",
 			job_name="Productivity_Maintance_Import"
 		)
-		return {"success": True, "Message": "Goals Import Starts Soon"}
+		return {"success": True, "Message": "Productivity Import Initiates Shortly."}
 	except Exception as e:
 		exc_type, exc_obj, exc_tb = sys.exc_info()
 		frappe.log_error("import_productivity", "line No:{}\n{}".format(
@@ -103,7 +103,7 @@ def get_productivity(month=None, year=None):
 	try:
 		get_productivity = frappe.db.get_list("Productivity", filters={"year": year, "month": month, "category": ["in", ["Catering Rev", "RPI", "RevPAR", "RmRev"]]}, fields=["category", "month", "amount", "marsha"])
 		if len(get_productivity) == 0:
-			return {"success": False, "message": "productivity details not found"}
+			return {"success": False, "message": "Unable to locate Productivity Details."}
 		empty_dataframe = pd.DataFrame(columns=["month", "Catering_Rev", "RPI", "RevPAR", "RmRev"])
 		df = pd.DataFrame.from_records(get_productivity)
 		piovt_df = pd.pivot_table(df, index= ['marsha'], columns = ['category'], values=['amount']).reset_index()

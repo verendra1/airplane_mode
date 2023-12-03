@@ -46,7 +46,7 @@ def upload_file_api(filename = None):
                 return {"success": True, "file": file}
             frappe.log_error("upload_file_api", response)
             return {"success": False, "message": response}
-        return {"success": False, "message": "filename is missing"}
+        return {"success": False, "message": "The file is not available."}
     except Exception as e:
         exc_type, exc_obj, exc_tb = sys.exc_info()
         frappe.log_error("upload_file_api", "line No:{}\n{}".format(
@@ -81,7 +81,7 @@ def change_old_password(user, pwd):
         else:
             return {'success': False, "message": "Password not matched"}
     except Exception as e:
-        return {"message": "Incorrect User or Password"}
+        return {"message": "Invalid username or password."}
 
 
 @frappe.whitelist(allow_guest=True)
@@ -94,7 +94,7 @@ def update_pwd(email,last_password_reset_date,new_password,old_pwd):
         doc.save(ignore_permissions=True)
         return {"success":True}
     except Exception as e:
-        return {"message":"Incorrect User or  Password"}
+        return {"message":"Invalid username or password."}
 
 
 def create_user(email=None, user_name=None, first_name=None, last_name=None, role=None):
@@ -111,8 +111,8 @@ def create_user(email=None, user_name=None, first_name=None, last_name=None, rol
             user_doc = frappe.get_doc(user_data)
             user_doc.insert()
             frappe.db.commit()
-            return {"success": True ,"message": "user created successfully"}
-        return {"success": False, "message": "user already exists"}
+            return {"success": True ,"message": "User creation successful."}
+        return {"success": False, "message": "User already present."}
     except Exception as e:
         exc_type, exc_obj, exc_tb = sys.exc_info()
         frappe.log_error("create_user", "line No:{}\n{}".format(
@@ -129,7 +129,7 @@ def send_mail_to_user(content, email_id, subject):
             content = content,
             now = True
         )
-        return {'success': True, "message": "mail sent successfully"}
+        return {'success': True, "message": "Email sent successfully."}
     except Exception as e:
         exc_type, exc_obj, exc_tb = sys.exc_info()
         frappe.log_error("send_mail_to_user", "line No:{}\n{}".format(
@@ -162,7 +162,7 @@ def get_cluster_details():
         data = frappe.db.get_list("Cluster Details", pluck="name")
         if len(data) > 0:
             return {"success": True, "data": data}
-        return {"success": False, "message": "no cluster details were found"}
+        return {"success": False, "message": "Unable to locate Cluster Details."}
     except Exception as e:
         exc_type, exc_obj, exc_tb = sys.exc_info()
         frappe.log_error("get_cluster_details", "line No:{}\n{}".format(
@@ -181,7 +181,7 @@ def get_quarter_details(quater):
         elif quater == "Q4":
             return {"success": True, "months": ["Oct", "Nov", "Dec"]}
         else:
-            return {"success": False, "message": "quarter not found"} 
+            return {"success": False, "message": "Unable to locate Quarter"} 
     except Exception as e:
         exc_type, exc_obj, exc_tb = sys.exc_info()
         frappe.log_error("get_quarter_details", "line No:{}\n{}".format(

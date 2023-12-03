@@ -242,7 +242,7 @@ def goal_maintance(goal_file, hotel_break_down_file):
 
 		get_marsha_details = frappe.db.get_all("Marsha Details",  fields=["name as marsha", "market_share_type", "ms_comp_non_comp", "team_type", "cluster"])
 		if len(get_marsha_details) == 0:
-			return {"success": False, "marsha": "Marsha details are empty"}
+			return {"success": False, "message": "Unable to locate Marsha Details."}
 		marsha_df = pd.DataFrame.from_records(get_marsha_details)
 		rpi_marshas = marsha_df.loc[(marsha_df['ms_comp_non_comp'] == 'Y') & (marsha_df['market_share_type'] == 'SB')]
 		rpi_marshas_list = rpi_marshas["marsha"].to_list()
@@ -294,6 +294,7 @@ def goal_maintance(goal_file, hotel_break_down_file):
 		frappe.db.commit()
 		dataimport(file=file_upload["file"], import_type="Insert New Records",
 					reference_doctype="Goals")
+		return {"success": True, "message": "The file has been successfully uploaded."}
 	except Exception as e:
 		exc_type, exc_obj, exc_tb = sys.exc_info()
 		frappe.log_error("goal_maintance", "line No:{}\n{}".format(
@@ -315,7 +316,7 @@ def import_goal_maintance(goal_file, hotel_break_down_file):
 			event="insert_goals_data",
 			job_name="Goal_Maintance_Import"
 		)
-		return {"success": True, "Message": "Goals Import Starts Soon"}
+		return {"success": True, "message": "Goals Import Initiates Shortly."}
 	except Exception as e:
 		exc_type, exc_obj, exc_tb = sys.exc_info()
 		frappe.log_error("import_goal_maintance", "line No:{}\n{}".format(
@@ -328,7 +329,7 @@ def get_goals(marsha=None, year=None):
 	try:
 		get_goals = frappe.db.get_list("Goals", filters={"marsha": marsha, "year": year, "category": ["in", ["Catering Rev", "RPI", "RevPAR", "RmRev"]]}, fields=["category", "month", "amount"])
 		if len(get_goals) == 0:
-			return {"success": False, "message": "No data found"}
+			return {"success": False, "message": "Unable to locate Goal Details."}
 		empty_dataframe = pd.DataFrame(columns=["month", "Catering_Rev", "RPI", "RevPAR", "RmRev"])
 		df = pd.DataFrame.from_records(get_goals)
 		group_df = df.groupby("category").agg({"amount": "sum"})
@@ -358,14 +359,14 @@ def get_goals(marsha=None, year=None):
 def get_goals_for_update(month=None, year=None, marsha=None):
 	try:
 		if not month and not year and not marsha:
-			return {'success': False, "messsage": 'month or year or marsha is missing in filters'}
+			return {'success': False, "message": "The filters lack either the month or year or marsha."}
 		data = frappe.db.get_list("Goals", filters={"month": month, "year": year, "marsha": marsha}, fields=["name", "category", "amount"])
 		if len(data) > 0:
 			df = pd.DataFrame.from_records(data)
 			df.replace("Catering Rev", "Catering_Rev", inplace=True)
 			df_data = df.to_dict('records')
 			return {"success": True, "data": df_data}
-		return {"success": False, "message": "No data found"}
+		return {"success": False, "message": "No data available for updating."}
 	except Exception as e:
 		exc_type, exc_obj, exc_tb = sys.exc_info()
 		frappe.log_error("get_goals_for_update", "line No:{}\n{}".format(
@@ -377,11 +378,11 @@ def get_goals_for_update(month=None, year=None, marsha=None):
 def update_goals(data=[], month=None, year=None, marsha=None):
 	try:
 		if len(data) == 0:
-			return {"success": False, "message": "No data found to update"}
+			return {"success": False, "message": "No data available for updating."}
 		for each in data:
 			frappe.db.set_value("Goals", each["name"], {"amount": each["amount"], "reason": each["reason"] if "reason" in each else None}, update_modified=True)
 			frappe.db.commit()
-		return {"success": True, "message": "goals updated"}
+		return {"success": True, "message": "Goals have been updated."}
 	except Exception as e:
 		exc_type, exc_obj, exc_tb = sys.exc_info()
 		frappe.log_error("update_goals", "line No:{}\n{}".format(
@@ -441,7 +442,7 @@ def extract_rpi_file(filename=None, type="goals"):
 					list(map(lambda x: {**x, "marsha": key}, value)))
 			if len(hotel_db_data) > 0:
 				return {"success": True, "data": hotel_db_data}
-		return {"success": False, "message": "no data found in Hbreakdown file."}
+		return {"success": False, "message": "No data discovered in the Hbreakdown file."}
 	except Exception as e:
 		exc_type, exc_obj, exc_tb = sys.exc_info()
 		frappe.log_error("extract_rpi_file", "line No:{}\n{}".format(

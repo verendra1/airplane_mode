@@ -57,7 +57,7 @@ def quarter_rpi_calculations_goals_vs_prod(goals_df, productivity_df):
 			elif len(goals_df_data) >0 and len(productivity_df_data) == 0:
 				merge_goals_productivity = goals_data_after_calc
 			else:
-				return {"success": False, "message": "No data found"}
+				return {"success": False, "message": "Details for Goal RPI and Productivity RPI could not be found."}
 		if "goal" not in merge_goals_productivity.columns.to_list():
 			merge_goals_productivity["goal"] = 0.0
 		if "productivity" not in merge_goals_productivity.columns.to_list():

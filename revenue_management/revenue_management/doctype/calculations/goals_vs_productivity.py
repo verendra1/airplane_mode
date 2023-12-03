@@ -27,9 +27,9 @@ def goal_vs_productivity(filters):
 		get_productivity = frappe.db.get_list("Productivity", filters=filters, fields=[
 											"marsha", "category", "amount as productivity_amount", "month"])
 		if len(get_productivity) == 0 and len(get_goals) == 0:
-			return {"success":False, "message": "No data found", "quarter_wise_data": []}
+			return {"success":False, "message": "Details for Goal RPI and Productivity RPI could not be found.", "quarter_wise_data": []}
 		if len(get_productivity) == 0 or len(get_goals) == 0:
-			return {"success":False, "message": "Goals or Productivity data is missing", "quarter_wise_data": []}
+			return {"success":False, "message": "Data for Goals or Productivity is not present.", "quarter_wise_data": []}
 		
 		marsha_details = frappe.db.get_list(
 			"Marsha Details", fields=["marsha", "market_share_type", "ms_comp_non_comp"])
@@ -42,9 +42,9 @@ def goal_vs_productivity(filters):
 		productivity_df_particular_col = productivity_df.loc[(productivity_df["category"].isin(["RevPAR", "Catering Rev", "RmRev"]))]
 
 		if len(goals_df_particular_col) == 0 and len(productivity_df_particular_col) == 0:
-			return {"success":False, "message": "No data found", "quarter_wise_data": []}
+			return {"success":False, "message": "Details for Goal RPI and Productivity RPI could not be found.", "quarter_wise_data": []}
 		if len(goals_df_particular_col) == 0 or len(productivity_df_particular_col) == 0:
-			return {"success":False, "message": "Goals or Productivity data is missing", "quarter_wise_data": []}
+			return {"success":False, "message": "Data for Goals or Productivity is not present.", "quarter_wise_data": []}
 
 		quater_rm_cat_cal = quarter_rm_cat_rev_calculations(
 			goals_df, productivity_df, rmip=False)
@@ -166,7 +166,7 @@ def goal_vs_productivity_yearly(filters):
 			elif not goal_vs_prod_quarterly["success"]:
 				return goal_vs_prod_quarterly
 			else:
-				return {"success":False, "message": "Something went wrong"}
+				return {"success":False, "message": "An issue occurred."}
 		return {"success": True, "quarter_wise_data": total_data}
 
 	except Exception as e:
