@@ -1,11 +1,9 @@
 # Copyright (c) 2023, Caratred Technologies and contributors
 # For license information, please see license.txt
 
+import datetime
 import frappe
 import json
-import numpy as np
-import requests
-import os
 import pandas as pd
 import sys
 import traceback
@@ -16,133 +14,162 @@ from revenue_management.utlis import dataimport, upload_file_api, get_cluster_de
 
 
 class Properties(Document):
-    pass
+	pass
 
 
 @frappe.whitelist()
 def import_properties(file=None):
-    try:
-        if not file:
-            return {"success": False, "message": "file is missing"}
-        site_name = cstr(frappe.local.site)
-        file_path = frappe.utils.get_bench_path() + "/sites/" + site_name + file
-        excel_data_df = pd.read_excel(file_path)
-        if len(excel_data_df) == 0:
-            frappe.publish_realtime("data_import_error", {"data_import": 'Marsha Details',"show_message": "no data in the file", "user": frappe.session.user})
-            return {"success": False, "message": "No data in the file"}
-        masha_details_columns = ["MARSHA", "Property Name on Tableau", "Status", "Area", "ADRS", "City",
-                                 "Team Name", "Currency", "Country", "Market Share Type", "Market Share Comp", "Team Type", "Billing Unit"]
-        if set(masha_details_columns).issubset(excel_data_df.columns):
-            cluster_details = get_cluster_details()
-            if not cluster_details["success"]:
-                frappe.publish_realtime("data_import_error", {"data_import": 'Marsha Details',"show_message": cluster_details["message"], "user": frappe.session.user})
-                return cluster_details
-            get_masha_list = frappe.db.get_list("Marsha Details", pluck="name")
-            masha_details_df = excel_data_df[masha_details_columns]
-            if len(masha_details_df) > 0:
-                get_missing_cluster_properties = masha_details_df[~masha_details_df["Team Name"].isin(
-                    cluster_details["data"])]
-                if len(get_missing_cluster_properties) > 0:
-                    missing_clusters_file = frappe.utils.get_bench_path() + "/sites/" + site_name + \
-                        "/public/files/Missing Clusters.xlsx"
-                    get_missing_cluster_properties.to_excel(
-                        missing_clusters_file, index=False)
-                    cluser_file_upload = upload_file_api(
-                        filename=missing_clusters_file)
-                    if not cluser_file_upload["success"]:
-                        return cluser_file_upload
-                    frappe.publish_realtime("data_import_error", {"data_import": 'Marsha Details',"show_message": "missing cluster detials for some properties", "file": cluser_file_upload["file"], "user": frappe.session.user})
-                    return {"success": False, "message": "missing cluster detials for some properties", "file": cluser_file_upload["file"]}
-                # remove_missing_cluster_properties =  masha_details_df[masha_details_df["Team Name"].isin(cluster_details["data"])]
-                remove_existing_masha_data_df = masha_details_df[~masha_details_df["MARSHA"].isin(
-                    get_masha_list)]
-                masha_file_name = frappe.utils.get_bench_path() + "/sites/" + site_name + \
-                    "/public/files/Masha Details.csv"
-                if len(remove_existing_masha_data_df) > 0:
-                    remove_existing_masha_data_df.rename(
-                        columns={"Team Name": "CLUSTER"}, inplace=True)
-                    remove_existing_masha_data_df.to_csv(
-                        masha_file_name, sep=',', index=False)
+	try:
+		if not file:
+			return {"success": False, "message": "file is missing"}
+		site_name = cstr(frappe.local.site)
+		file_path = frappe.utils.get_bench_path() + "/sites/" + site_name + file
+		excel_data_df = pd.read_excel(file_path)
+		if len(excel_data_df) == 0:
+			frappe.publish_realtime("data_import_error", {"data_import": 'Marsha Details',"show_message": "no data in the file", "user": frappe.session.user})
+			return {"success": False, "message": "No data in the file"}
+		masha_details_columns = ["MARSHA", "Property Name on Tableau", "Status", "Area", "ADRS", "City",
+								 "Team Name", "Currency", "Country", "Market Share Type", "Market Share Comp", "Team Type", "Billing Unit"]
+		if set(masha_details_columns).issubset(excel_data_df.columns):
+			cluster_details = get_cluster_details()
+			if not cluster_details["success"]:
+				frappe.publish_realtime("data_import_error", {"data_import": 'Marsha Details',"show_message": cluster_details["message"], "user": frappe.session.user})
+				return cluster_details
+			get_masha_list = frappe.db.get_list("Marsha Details", pluck="name")
+			masha_details_df = excel_data_df[masha_details_columns]
+			if len(masha_details_df) > 0:
+				get_missing_cluster_properties = masha_details_df[~masha_details_df["Team Name"].isin(
+					cluster_details["data"])]
+				if len(get_missing_cluster_properties) > 0:
+					missing_clusters_file = frappe.utils.get_bench_path() + "/sites/" + site_name + \
+						"/public/files/Missing Clusters.xlsx"
+					get_missing_cluster_properties.to_excel(
+						missing_clusters_file, index=False)
+					cluser_file_upload = upload_file_api(
+						filename=missing_clusters_file)
+					if not cluser_file_upload["success"]:
+						return cluser_file_upload
+					frappe.publish_realtime("data_import_error", {"data_import": 'Marsha Details',"show_message": "missing cluster detials for some properties", "file": cluser_file_upload["file"], "user": frappe.session.user})
+					return {"success": False, "message": "missing cluster detials for some properties", "file": cluser_file_upload["file"]}
+				# remove_missing_cluster_properties =  masha_details_df[masha_details_df["Team Name"].isin(cluster_details["data"])]
+				remove_existing_masha_data_df = masha_details_df[~masha_details_df["MARSHA"].isin(
+					get_masha_list)]
+				masha_file_name = frappe.utils.get_bench_path() + "/sites/" + site_name + \
+					"/public/files/Masha Details.csv"
+				if len(remove_existing_masha_data_df) > 0:
+					remove_existing_masha_data_df.rename(
+						columns={"Team Name": "CLUSTER"}, inplace=True)
+					remove_existing_masha_data_df.to_csv(
+						masha_file_name, sep=',', index=False)
 
-                    file_upload = upload_file_api(filename=masha_file_name)
-                    if not file_upload["success"]:
-                        return file_upload
-                    dataimport(file=file_upload["file"], import_type="Insert New Records",
-                               reference_doctype="Marsha Details")
+					file_upload = upload_file_api(filename=masha_file_name)
+					if not file_upload["success"]:
+						return file_upload
+					dataimport(file=file_upload["file"], import_type="Insert New Records",
+							   reference_doctype="Marsha Details")
 
-                existing_masha_data_df = masha_details_df[masha_details_df["MARSHA"].isin(
-                    get_masha_list)]
-                if len(existing_masha_data_df) > 0:
-                    existing_masha_data_df.rename(
-                        columns={"Team Name": "CLUSTER"}, inplace=True)
-                    existing_masha_data_df.to_csv(
-                        masha_file_name, sep=',', index=False)
+				existing_masha_data_df = masha_details_df[masha_details_df["MARSHA"].isin(
+					get_masha_list)]
+				if len(existing_masha_data_df) > 0:
+					existing_masha_data_df.rename(
+						columns={"Team Name": "CLUSTER"}, inplace=True)
+					existing_masha_data_df.to_csv(
+						masha_file_name, sep=',', index=False)
 
-                    file_upload = upload_file_api(filename=masha_file_name)
-                    if not file_upload["success"]:
-                        return file_upload
-                    dataimport(file=file_upload["file"], import_type="Update Existing Records",
-                               reference_doctype="Marsha Details")
-                return {"success": True, "message": "Data Imported"}
-            frappe.publish_realtime("data_import_error", {"data_import": 'Marsha Details',"show_message": "no data found", "user": frappe.session.user})
-            return {"success": False, "message": "No data found"}
-        frappe.publish_realtime("data_import_error", {"data_import": 'Marsha Details',"show_message": "file mismatch.", "user": frappe.session.user})
-        return {"success": False, "message": "Some columns are missing in excel file."}
-    except Exception as e:
-        exc_type, exc_obj, exc_tb = sys.exc_info()
-        frappe.log_error("import_properties", "line No:{}\n{}".format(
-            exc_tb.tb_lineno, traceback.format_exc()))
-        return {"success": False, "message": str(e)}
+					file_upload = upload_file_api(filename=masha_file_name)
+					if not file_upload["success"]:
+						return file_upload
+					dataimport(file=file_upload["file"], import_type="Update Existing Records",
+							   reference_doctype="Marsha Details")
+				return {"success": True, "message": "Data Imported"}
+			frappe.publish_realtime("data_import_error", {"data_import": 'Marsha Details',"show_message": "no data found", "user": frappe.session.user})
+			return {"success": False, "message": "No data found"}
+		frappe.publish_realtime("data_import_error", {"data_import": 'Marsha Details',"show_message": "file mismatch.", "user": frappe.session.user})
+		return {"success": False, "message": "Some columns are missing in excel file."}
+	except Exception as e:
+		exc_type, exc_obj, exc_tb = sys.exc_info()
+		frappe.log_error("import_properties", "line No:{}\n{}".format(
+			exc_tb.tb_lineno, traceback.format_exc()))
+		return {"success": False, "message": str(e)}
 
 
 @frappe.whitelist()
 def import_properties_team_leaders(file=None):
-    try:
-        enqueue(
-            import_properties,
-            queue="long",
-            timeout=800000,
-            is_async=True,
-            now=False,
-            file=file,
-            event="import_properties",
-            job_name="Properties_Import"
-        )
-        return {"success": True, "Message": "Properties Import Starts Soon"}
-    except Exception as e:
-        exc_type, exc_obj, exc_tb = sys.exc_info()
-        frappe.log_error("import_properties_team_leaders", "line No:{}\n{}".format(
-            exc_tb.tb_lineno, traceback.format_exc()))
-        return {"success": False, "message": str(e)}
+	try:
+		enqueue(
+			import_properties,
+			queue="long",
+			timeout=800000,
+			is_async=True,
+			now=False,
+			file=file,
+			event="import_properties",
+			job_name="Properties_Import"
+		)
+		return {"success": True, "Message": "Properties Import Starts Soon"}
+	except Exception as e:
+		exc_type, exc_obj, exc_tb = sys.exc_info()
+		frappe.log_error("import_properties_team_leaders", "line No:{}\n{}".format(
+			exc_tb.tb_lineno, traceback.format_exc()))
+		return {"success": False, "message": str(e)}
 
 
 @frappe.whitelist()
-def verify_excel_headers(columns=[], type=None):
-    try:
-        if len(columns) == 0:
-            return {"success": False, "message": "columns are empty"}
-        if isinstance(columns, str):
-            columns = json.loads(columns)
-        if type == "Properties":
-            masha_details_columns = ["MARSHA", "Property Name on Tableau", "Status", "Area", "ADRS", "City",
-                                    "Team Name", "Currency", "Country", "Market Share Type", "Market Share Comp", "Team Type", "Billing Unit"]
-            if set(masha_details_columns).issubset(columns):
-                return {"success": True, "message": "columns matched"}
-            return {"success": False, "message": "columns mismatch"}
-        elif type == "Employees":
-            emplyee_columns = ["Person User Name", "Person Name", "Job Name", "Career Band", "Work Location Code", "Work Email Address", "Job Entry Date"]
-            if set(emplyee_columns).issubset(columns):
-                return {"success": True, "message": "columns matched"}
-            return {"success": False, "message": "columns mismatch"}
-        elif type == "Team Leader":
-            team_leader_columns = ["Revenue Leader", "EID", "Email Id", "Team Name", "MARSHA"]
-            if set(team_leader_columns).issubset(columns):
-                return {"success": True, "message": "columns matched"}
-            return {"success": False, "message": "columns mismatch"}
-        else:
-            return {"success": False, "message": "Given file name not matched"}
-    except Exception as e:
-        exc_type, exc_obj, exc_tb = sys.exc_info()
-        frappe.log_error("verify_properties_columns", "line No:{}\n{}".format(
-            exc_tb.tb_lineno, traceback.format_exc()))
-        return {"success": False, "message": str(e)}
+def verify_excel_headers(columns=[], sub_columns=[], type=None):
+	try:
+		if len(columns) == 0:
+			return {"success": False, "message": "columns are empty"}
+		if isinstance(columns, str):
+			columns = json.loads(columns)
+		if isinstance(sub_columns, str):
+			sub_columns = json.loads(sub_columns)
+		if type == "Properties":
+			masha_details_columns = ["MARSHA", "Property Name on Tableau", "Status", "Area", "ADRS", "City",
+									"Team Name", "Currency", "Country", "Market Share Type", "Market Share Comp", "Team Type", "Billing Unit"]
+			if set(masha_details_columns).issubset(columns):
+				return {"success": True, "message": "columns matched"}
+			return {"success": False, "message": "Columns mismatch"}
+		elif type == "Employees":
+			emplyee_columns = ["Person User Name", "Person Name", "Job Name", "Career Band", "Work Location Code", "Work Email Address", "Job Entry Date"]
+			if set(emplyee_columns).issubset(columns):
+				return {"success": True, "message": "columns matched"}
+			return {"success": False, "message": "Columns mismatch"}
+		elif type == "Team Leader":
+			team_leader_columns = ["Revenue Leader", "EID", "Email Id", "Team Name", "MARSHA"]
+			if set(team_leader_columns).issubset(columns):
+				return {"success": True, "message": "columns matched"}
+			return {"success": False, "message": "Columns mismatch"}
+		elif type == "Goal":
+			goals_columns = ["RevPAR", "Catering Rev", "RmRev", "AVAILRMS_TY"]
+			goals_sub_columns = ["Marsha","Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec","Quarter Total"]
+			if set(goals_columns).issubset(columns) and set(sub_columns).issubset(goals_sub_columns):
+				return {"success": True, "message": "columns matched"}
+			return {"success": False, "message": "Columns mismatch"}
+		elif type == "GoalHBreakDown":
+			if columns[-1].isnumeric():
+				del columns[-1]
+			months = [datetime.datetime.strptime(value, '%B %Y').strftime('%b') for value in columns]
+			hdb_columns = ['Marsha Code', 'RevPAR Rank', 'Occ.', 'Comp Set Occ.', 'ADR', 'Comp Set ADR', 'RevPAR', 'Comp Set RevPAR', 'RPI', 'RPI % Point Change', 'Tymarravail', 'Tymktavail']
+			if len(months)>0 and set(sub_columns).issubset(hdb_columns):
+				return {"success": True, "message": "columns matched"}
+			return {"success": False, "message": "Columns mismatch"}
+		elif type == "Productivity":
+			goals_columns = ['MARSHA_NEW', 'Gross Op. Rev. (GOR)', 'GOR % Chg', 'Room Rev. $ Chg', 'Occ. Rate Pt. Chg', 'ADR % Chg', 'RevPAR % Chg', 'F&B Rev. % Chg', 'Rest./Lounges & IRD Rev. % Chg', 
+					'Catering Rev. % Chg', 'Prop Count', 'ADR', 'Top - ADR - DS vs. CT ($)', 'Rest./Lounges Rev.', 'Top - BarRest Conv - DS vs. CT ($)', 'Catering Rev.', 'Top - CtRev Conv - DS vs. CT ($)', 
+					'F&B Rev.', 'Top - FBRev Conv - DS vs. CT ($)', 'Top - GOR Conv - DS vs. CT ($)', 'Occ. Rate', 'RevPAR', 'Top - RevPAR - DS vs. CT ($)', 'Room Rev.']
+			if set(goals_columns).issubset(columns):
+				return {"success": True, "message": "columns matched"}
+			return {"success": False, "message": "Columns mismatch"}
+		elif type == "RPI File":
+			months = [datetime.datetime.strptime(value, '%B %Y').strftime('%b') for value in columns]
+			hdb_columns = ['Marsha Code', 'RevPAR Rank', 'Occ.', 'Comp Set Occ.', 'ADR', 'Comp Set ADR', 'RevPAR', 'Comp Set RevPAR', 'RPI', 'RPI % Point Change', 'Tymarravail', 'Tymktavail']
+			if len(months)>0 and set(sub_columns).issubset(hdb_columns):
+				return {"success": True, "message": "columns matched"}
+			return {"success": False, "message": "Columns mismatch"}
+		else:
+			return {"success": False, "message": "Given file name not matched"}
+	except Exception as e:
+		exc_type, exc_obj, exc_tb = sys.exc_info()
+		frappe.log_error("verify_properties_columns", "line No:{}\n{}".format(
+			exc_tb.tb_lineno, traceback.format_exc()))
+		return {"success": False, "message": str(e)}
