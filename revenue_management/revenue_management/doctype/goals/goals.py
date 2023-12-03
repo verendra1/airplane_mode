@@ -276,7 +276,7 @@ def goal_maintance(goal_file, hotel_break_down_file):
 		goals_df = pd.DataFrame.from_records(goals_data)
 		rpi_goals_df = goals_df.loc[(goals_df["marsha"].isin(rpi_marshas_list)) & (goals_df["category"] != "RevPAR")]
 		revpar_goals_df = goals_df.loc[~(goals_df["marsha"].isin(rpi_marshas_list))]
-		get_rpi_data = extract_rpi_file(filename=hotel_break_down_file)
+		get_rpi_data = extract_rpi_file(filename=hotel_break_down_file, type="goals")
 		if not get_rpi_data["success"]:
 			return get_rpi_data
 		hotel_df = pd.DataFrame.from_records(get_rpi_data["data"])
@@ -389,7 +389,7 @@ def update_goals(data=[], month=None, year=None, marsha=None):
 		return {"success": False, "message": str(e)}
 
 
-def extract_rpi_file(filename=None):
+def extract_rpi_file(filename=None, type="goals"):
 	try:
 		get_rpi_marshas = frappe.db.get_list("Marsha Details", filters={"market_share_type": "Y", "market_share_type": "SB"}, pluck="name")
 		site_name = cstr(frappe.local.site)
@@ -416,19 +416,31 @@ def extract_rpi_file(filename=None):
 		avail_df.rename(columns={'RevPAR': 'HBD RevPAR'}, inplace=True)
 		avail_df["RPI"] = (avail_df["RPI"]*100)+2
 		hotel_db_data = []
-		for each in ['Tymktavail','HBD RevPAR', 'Comp Set RevPAR', 'Tymarravail', 'RPI']:
-			each_df = avail_df[each]
+		if type == "goals":
+			for each in ['Tymktavail','HBD RevPAR', 'Comp Set RevPAR', 'Tymarravail', 'RPI']:
+				each_df = avail_df[each]
+				months = [datetime.datetime.strptime(value, '%B %Y').strftime('%b') for value in dates]
+				each_df = each_df.set_axis(months, axis=1)
+				converted_hotel_df = each_df.apply(lambda x: x.apply(
+						lambda y: {"month": x.name, "amount": y, "category": each}), axis=0)
+				converted_hotel_df = converted_hotel_df.T
+				hotel_data = converted_hotel_df.to_dict('list')
+				for key, value in hotel_data.items():
+					hotel_db_data.extend(
+						list(map(lambda x: {**x, "marsha": key}, value)))
+			if len(hotel_db_data) > 0:
+				return {"success": True, "data": hotel_db_data}
+		else:
 			months = [datetime.datetime.strptime(value, '%B %Y').strftime('%b') for value in dates]
-			each_df = each_df.set_axis(months, axis=1)
-			converted_hotel_df = each_df.apply(lambda x: x.apply(
-					lambda y: {"month": x.name, "amount": y, "category": each}), axis=0)
+			converted_hotel_df = avail_df.apply(lambda x: x.apply(
+						lambda y: {"category": x.name, "amount": y, "month": months[0]}), axis=0)
 			converted_hotel_df = converted_hotel_df.T
 			hotel_data = converted_hotel_df.to_dict('list')
 			for key, value in hotel_data.items():
 				hotel_db_data.extend(
 					list(map(lambda x: {**x, "marsha": key}, value)))
-		if len(hotel_db_data) > 0:
-			return {"success": True, "data": hotel_db_data}
+			if len(hotel_db_data) > 0:
+				return {"success": True, "data": hotel_db_data}
 		return {"success": False, "message": "no data found in Hbreakdown file."}
 	except Exception as e:
 		exc_type, exc_obj, exc_tb = sys.exc_info()

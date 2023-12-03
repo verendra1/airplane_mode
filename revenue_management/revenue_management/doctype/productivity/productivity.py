@@ -49,12 +49,11 @@ def productivity_data_import(file=None, rpi_file=None, month=None, year=None):
 		empty_df["Month"] = month
 		rpi_productivity_df = empty_df.loc[(empty_df["marsha"].isin(rpi_marshas_list)) & (empty_df["category"] != "RevPAR")]
 		revpar_productivity_df = empty_df.loc[~(empty_df["marsha"].isin(rpi_marshas_list))]
-
-		get_rpi_data = extract_rpi_file(filename=rpi_file)
+		get_rpi_data = extract_rpi_file(filename=rpi_file, type="Productivity")
 		if not get_rpi_data["success"]:
 			return get_rpi_data
 		hotel_df = pd.DataFrame.from_records(get_rpi_data["data"])
-		final_df = pd.concat([hotel_df])
+		final_df = pd.concat([rpi_productivity_df, revpar_productivity_df, hotel_df])
 		final_df["Year"] = year
 		productivity_file_name = frappe.utils.get_bench_path() + "/sites/" + site_name + \
 			"/public/files/Productivity Details.csv"
@@ -63,8 +62,8 @@ def productivity_data_import(file=None, rpi_file=None, month=None, year=None):
 		file_upload = upload_file_api(filename=productivity_file_name)
 		if not file_upload["success"]:
 			return file_upload
-		# frappe.db.delete("Productivity", {"year": year, "month": month})
-		# frappe.db.commit()
+		frappe.db.delete("Productivity", {"year": year, "month": month})
+		frappe.db.commit()
 		dataimport(file=file_upload["file"], import_type="Insert New Records",
 				reference_doctype="Productivity")
 		return {"success": True, "message": "file uploaded successfully"}

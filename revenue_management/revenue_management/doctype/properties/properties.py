@@ -2,6 +2,7 @@
 # For license information, please see license.txt
 
 import frappe
+import json
 import numpy as np
 import requests
 import os
@@ -111,5 +112,37 @@ def import_properties_team_leaders(file=None):
     except Exception as e:
         exc_type, exc_obj, exc_tb = sys.exc_info()
         frappe.log_error("import_properties_team_leaders", "line No:{}\n{}".format(
+            exc_tb.tb_lineno, traceback.format_exc()))
+        return {"success": False, "message": str(e)}
+
+
+@frappe.whitelist()
+def verify_excel_headers(columns=[], type=None):
+    try:
+        if len(columns) == 0:
+            return {"success": False, "message": "columns are empty"}
+        if isinstance(columns, str):
+            columns = json.loads(columns)
+        if type == "Properties":
+            masha_details_columns = ["MARSHA", "Property Name on Tableau", "Status", "Area", "ADRS", "City",
+                                    "Team Name", "Currency", "Country", "Market Share Type", "Market Share Comp", "Team Type", "Billing Unit"]
+            if set(masha_details_columns).issubset(columns):
+                return {"success": True, "message": "columns matched"}
+            return {"success": False, "message": "columns mismatch"}
+        elif type == "Employees":
+            emplyee_columns = ["Person User Name", "Person Name", "Job Name", "Career Band", "Work Location Code", "Work Email Address", "Job Entry Date"]
+            if set(emplyee_columns).issubset(columns):
+                return {"success": True, "message": "columns matched"}
+            return {"success": False, "message": "columns mismatch"}
+        elif type == "Team Leader":
+            team_leader_columns = ["Revenue Leader", "EID", "Email Id", "Team Name", "MARSHA"]
+            if set(team_leader_columns).issubset(columns):
+                return {"success": True, "message": "columns matched"}
+            return {"success": False, "message": "columns mismatch"}
+        else:
+            return {"success": False, "message": "Given file name not matched"}
+    except Exception as e:
+        exc_type, exc_obj, exc_tb = sys.exc_info()
+        frappe.log_error("verify_properties_columns", "line No:{}\n{}".format(
             exc_tb.tb_lineno, traceback.format_exc()))
         return {"success": False, "message": str(e)}
