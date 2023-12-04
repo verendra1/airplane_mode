@@ -62,7 +62,7 @@ def quarter_rpi_calculations_goals_vs_prod(goals_df, productivity_df):
 			merge_goals_productivity["goal"] = 0.0
 		if "productivity" not in merge_goals_productivity.columns.to_list():
 			merge_goals_productivity["productivity"] = 0.0
-		merge_goals_productivity["achieved"] = (merge_goals_productivity["goal"]/merge_goals_productivity["productivity"])*100
+		merge_goals_productivity["achieved"] = (merge_goals_productivity["productivity"]/merge_goals_productivity["goal"])*100
 		# merge_goals_productivity.rename(columns = {"quarter_rpi_x" : "goal", "quarter_rpi_y": "productivity"}, inplace = True)
 		merge_goals_productivity = merge_goals_productivity.round(decimals = 2)
 		merge_goals_productivity["category"] = "RPI"
