@@ -51,6 +51,17 @@ def import_properties(file=None):
 						return cluser_file_upload
 					frappe.publish_realtime("data_import_error", {"data_import": 'Marsha Details',"show_message": "Cluster details are absent for certain properties.", "file": cluser_file_upload["file"], "user": frappe.session.user})
 					return {"success": False, "message": "Cluster details are absent for certain properties.", "file": cluser_file_upload["file"]}
+				status = ["Open", "Cancelled", "Not Yet Opened", "Deflagged"]
+				get_records_except_above_status = masha_details_df[~masha_details_df["Status"].isin(status)]
+				if len(get_records_except_above_status) > 0:
+					extra_status_file_path = frappe.utils.get_bench_path() + "/sites/" + site_name + "/public/files/Wrong Marsha Status.xlsx"
+					get_records_except_above_status.to_excel(extra_status_file_path, index=False)
+					status_file_upload = upload_file_api(
+						filename=extra_status_file_path)
+					if not status_file_upload["success"]:
+						return status_file_upload
+					frappe.publish_realtime("data_import_error", {"data_import": 'Marsha Details',"show_message": "Additional statuses apart from Open, Cancelled, Not Yet Opened, and Deflagged.", "file": status_file_upload["file"], "user": frappe.session.user})
+					return {"success": False, "message": "Additional statuses apart from Open, Cancelled, Not Yet Opened, and Deflagged.", "file": status_file_upload["file"]}
 				# remove_missing_cluster_properties =  masha_details_df[masha_details_df["Team Name"].isin(cluster_details["data"])]
 				remove_existing_masha_data_df = masha_details_df[~masha_details_df["MARSHA"].isin(
 					get_masha_list)]
