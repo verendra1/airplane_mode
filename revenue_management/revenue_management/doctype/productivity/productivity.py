@@ -101,7 +101,17 @@ def import_productivity(file=None, rpi_file=None, month=None, year=None):
 @frappe.whitelist()
 def get_productivity(month=None, year=None):
 	try:
-		get_productivity = frappe.db.get_list("Productivity", filters={"year": year, "month": month, "category": ["in", ["Catering Rev", "RPI", "RevPAR", "RmRev"]]}, fields=["category", "month", "amount", "marsha"])
+		if not frappe.db.exists("User", frappe.session.user):
+			return {"success": False, "message": 'Unable to locate User'}
+		get_role = frappe.db.get_list("Has Role", filters={"parent": frappe.session.user}, pluck="role", ignore_permissions=True)
+		if "Team Lead" in get_role:
+			get_cluster = frappe.db.get_value("Employees", {"work_email_address": frappe.session.user}, ["cluster"])
+			get_marsha = frappe.db.get_list("Marsha Details", filters={"cluster": get_cluster}, pluck="name")
+			filters={"year": year, "month": month, "category": ["in", ["Catering Rev", "RPI", "RevPAR", "RmRev"]], "marsha": ["in", get_marsha]}
+		else:
+			filters={"year": year, "month": month, "category": ["in", ["Catering Rev", "RPI", "RevPAR", "RmRev"]]}
+
+		get_productivity = frappe.db.get_list("Productivity", filters=filters, fields=["category", "month", "amount", "marsha"])
 		if len(get_productivity) == 0:
 			return {"success": False, "message": "Unable to locate Productivity Details."}
 		empty_dataframe = pd.DataFrame(columns=["month", "Catering_Rev", "RPI", "RevPAR", "RmRev"])
