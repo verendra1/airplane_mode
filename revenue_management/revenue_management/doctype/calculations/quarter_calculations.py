@@ -106,18 +106,20 @@ def quarter_rm_cat_rev_calculations(goals_df, productivity_df, rmip=True):
 			goals_calc = round_df[["Catering Rev", "RmRev"]].T
 			goals_reset_index = goals_calc.reset_index()
 			goals_reset_index.rename(columns = {0 : "goal"}, inplace = True)
+			goals_reset_index.category.replace(["Catering Rev", "RmRev"], ["Catering Revenue", "Room Revenue"], inplace=True)
 
 			productivity_calc = round_df[["Productivity Catering Rev", "Productivity RmRev"]].T
 			productivity_reset_index = productivity_calc.reset_index()
 			productivity_reset_index.rename(columns = {0 : "productivity"}, inplace = True)
-			productivity_reset_index.category.replace(["Productivity Catering Rev", "Productivity RmRev"], ["Catering Rev", "RmRev"], inplace=True)
+			productivity_reset_index.category.replace(["Productivity Catering Rev", "Productivity RmRev"], ["Catering Revenue", "Room Revenue"], inplace=True)
 
 			achieved_calc = round_df[["catering_rev_achieved", "rmrev_achieved"]].T
 			achieved_reset_index = achieved_calc.reset_index()
 			achieved_reset_index.rename(columns = {0 : "achieved"}, inplace = True)
-			achieved_reset_index.category.replace(["catering_rev_achieved", "rmrev_achieved"], ["Catering Rev", "RmRev"], inplace=True)
+			achieved_reset_index.category.replace(["catering_rev_achieved", "rmrev_achieved"], ["Catering Revenue", "Room Revenue"], inplace=True)
 
 			merge_total_df = pd.merge(pd.merge(goals_reset_index, productivity_reset_index, on=["category"], how="outer"), achieved_reset_index, on=["category"], how="outer")
+			merge_total_df.sort_values(by = 'category', ascending = False, inplace=True)
 			merge_total_df.replace(np.nan,0, inplace=True)
 			return {"success": True, "df": merge_total_df}
 	except Exception as e:

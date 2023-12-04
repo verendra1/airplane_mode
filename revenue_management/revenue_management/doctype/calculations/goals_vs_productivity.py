@@ -139,6 +139,7 @@ def goal_vs_productivity(filters):
 		merge_all.sort_values(by='month', inplace=True)
 		month_wise_date = []
 		for ind, val in merge_all.groupby(['month']):
+			val.category.replace(["Catering Rev", "RmRev"], ["Catering Revenue", "Room Revenue"], inplace=True)
 			month_wise_date.extend([val.to_dict('records')])
 		
 
