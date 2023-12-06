@@ -1,0 +1,18 @@
+include MANIFEST.in
+include requirements.txt
+include *.json
+include *.md
+include *.py
+include *.txt
+recursive-include airplane_mode *.css
+recursive-include airplane_mode *.csv
+recursive-include airplane_mode *.html
+recursive-include airplane_mode *.ico
+recursive-include airplane_mode *.js
+recursive-include airplane_mode *.json
+recursive-include airplane_mode *.md
+recursive-include airplane_mode *.png
+recursive-include airplane_mode *.py
+recursive-include airplane_mode *.svg
+recursive-include airplane_mode *.txt
+recursive-exclude airplane_mode *.pyc
