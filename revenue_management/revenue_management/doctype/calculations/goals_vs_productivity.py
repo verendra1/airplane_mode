@@ -8,7 +8,7 @@ from revenue_management.utlis import get_quarter_details
 from revenue_management.revenue_management.doctype.calculations.quarter_calculations import quarter_rm_cat_rev_calculations, quarter_rpi_calculations_goals_vs_prod
 
 
-@frappe.whitelist()
+@frappe.whitelist(allow_guest=True)
 def goal_vs_productivity(filters):
 	try:
 		if isinstance(filters, str):
