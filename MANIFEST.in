@@ -1,0 +1,18 @@
+include MANIFEST.in
+include requirements.txt
+include *.json
+include *.md
+include *.py
+include *.txt
+recursive-include revenue_management *.css
+recursive-include revenue_management *.csv
+recursive-include revenue_management *.html
+recursive-include revenue_management *.ico
+recursive-include revenue_management *.js
+recursive-include revenue_management *.json
+recursive-include revenue_management *.md
+recursive-include revenue_management *.png
+recursive-include revenue_management *.py
+recursive-include revenue_management *.svg
+recursive-include revenue_management *.txt
+recursive-exclude revenue_management *.pyc

@@ -1,0 +1,75 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2023-10-10 16:28:45.549319",
+ "default_view": "List",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "marsha",
+  "property_name",
+  "currency",
+  "room_revenue",
+  "catering",
+  "revpar_index"
+ ],
+ "fields": [
+  {
+   "fieldname": "marsha",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Marsha",
+   "options": "Marsha Details",
+   "reqd": 1
+  },
+  {
+   "fetch_from": "marsha.property_name",
+   "fieldname": "property_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Property Name"
+  },
+  {
+   "fetch_from": "marsha.currency",
+   "fieldname": "currency",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Currency"
+  },
+  {
+   "default": "0",
+   "fieldname": "room_revenue",
+   "fieldtype": "Check",
+   "in_list_view": 1,
+   "label": "Room Revenue"
+  },
+  {
+   "default": "0",
+   "fieldname": "catering",
+   "fieldtype": "Check",
+   "in_list_view": 1,
+   "label": "Catering"
+  },
+  {
+   "default": "0",
+   "fieldname": "revpar_index",
+   "fieldtype": "Check",
+   "in_list_view": 1,
+   "label": "RevPAR Index"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2023-10-10 18:54:44.051701",
+ "modified_by": "Administrator",
+ "module": "Revenue Management",
+ "name": "Properties",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1
+}

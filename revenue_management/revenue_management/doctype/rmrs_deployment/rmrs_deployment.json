@@ -1,0 +1,102 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "field:hotel_cluster_name",
+ "creation": "2023-10-10 16:24:33.463274",
+ "default_view": "List",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "deployment_type",
+  "column_break_wtect",
+  "cluster_name",
+  "hotel_name",
+  "properties_list_section",
+  "properties",
+  "hotel_cluster_name"
+ ],
+ "fields": [
+  {
+   "depends_on": "eval:doc.deployment_type == \"Cluster\"",
+   "fieldname": "cluster_name",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "in_preview": 1,
+   "label": "Cluster Name",
+   "options": "Cluster Details",
+   "unique": 1
+  },
+  {
+   "fieldname": "column_break_wtect",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "deployment_type",
+   "fieldtype": "Select",
+   "label": "Deployment Type",
+   "options": "\nCluster\nIndividual Property"
+  },
+  {
+   "fieldname": "properties_list_section",
+   "fieldtype": "Section Break",
+   "label": "Properties List"
+  },
+  {
+   "fieldname": "properties",
+   "fieldtype": "Table",
+   "label": "Properties",
+   "options": "Properties"
+  },
+  {
+   "depends_on": "eval:doc.deployment_type == \"Individual Property\"",
+   "fieldname": "hotel_name",
+   "fieldtype": "Link",
+   "label": "Hotel Name",
+   "options": "Marsha Details"
+  },
+  {
+   "fieldname": "hotel_cluster_name",
+   "fieldtype": "Data",
+   "hidden": 1,
+   "label": "Hotel Cluster Name",
+   "unique": 1
+  }
+ ],
+ "hide_toolbar": 1,
+ "index_web_pages_for_search": 1,
+ "links": [
+  {
+   "link_doctype": "Approvers",
+   "link_fieldname": "cluster"
+  },
+  {
+   "link_doctype": "Team Roster",
+   "link_fieldname": "cluster"
+  }
+ ],
+ "modified": "2023-10-11 19:06:01.320564",
+ "modified_by": "Administrator",
+ "module": "Revenue Management",
+ "name": "RMRS Deployment",
+ "naming_rule": "By fieldname",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1
+}

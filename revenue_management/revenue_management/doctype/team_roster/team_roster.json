@@ -1,0 +1,155 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2023-10-10 18:51:48.981970",
+ "default_view": "List",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "cluster",
+  "team_details_section",
+  "eid",
+  "current_role_type",
+  "team_start_date",
+  "column_break_yue0i",
+  "team_member",
+  "role_effective_date",
+  "team_end_date",
+  "eligibility_and_enrollment_section",
+  "eligibility",
+  "program_role",
+  "billing_marsha",
+  "supporting_marsha",
+  "column_break_t5fpy",
+  "program_enrollment",
+  "title",
+  "property_name"
+ ],
+ "fields": [
+  {
+   "fieldname": "cluster",
+   "fieldtype": "Link",
+   "label": "Cluster",
+   "options": "RMRS Deployment"
+  },
+  {
+   "fieldname": "team_details_section",
+   "fieldtype": "Section Break",
+   "label": "Team Details"
+  },
+  {
+   "fieldname": "eid",
+   "fieldtype": "Link",
+   "label": "EID",
+   "options": "Employees"
+  },
+  {
+   "fieldname": "current_role_type",
+   "fieldtype": "Select",
+   "label": "Current Role Type",
+   "options": "\nIndividual Contributor\nLeader"
+  },
+  {
+   "fieldname": "team_start_date",
+   "fieldtype": "Date",
+   "label": "Team Start Date"
+  },
+  {
+   "fieldname": "column_break_yue0i",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fetch_from": "eid.name1",
+   "fieldname": "team_member",
+   "fieldtype": "Data",
+   "label": "Team Member"
+  },
+  {
+   "fieldname": "role_effective_date",
+   "fieldtype": "Date",
+   "label": "Role Effective Date"
+  },
+  {
+   "fieldname": "team_end_date",
+   "fieldtype": "Date",
+   "label": "Team End Date"
+  },
+  {
+   "fieldname": "eligibility_and_enrollment_section",
+   "fieldtype": "Section Break",
+   "label": "Eligibility And Enrollment"
+  },
+  {
+   "fieldname": "eligibility",
+   "fieldtype": "Select",
+   "label": "Eligibility",
+   "options": "\nBrilliant\nGolden Circle\nTop Performer\nRMIP"
+  },
+  {
+   "fieldname": "program_role",
+   "fieldtype": "Select",
+   "label": "Program Role",
+   "options": "\nIndividual Contributor\nLeader"
+  },
+  {
+   "fieldname": "billing_marsha",
+   "fieldtype": "Link",
+   "label": "Billing Marsha",
+   "options": "Marsha Details"
+  },
+  {
+   "fieldname": "supporting_marsha",
+   "fieldtype": "Table",
+   "label": "Supporting Marsha",
+   "options": "Supporting Marsha"
+  },
+  {
+   "fieldname": "column_break_t5fpy",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "program_enrollment",
+   "fieldtype": "Select",
+   "label": "Program Enrollment",
+   "options": "\nBrilliant\nGolden Circle\nTop Performer"
+  },
+  {
+   "fieldname": "title",
+   "fieldtype": "Data",
+   "label": "Title"
+  },
+  {
+   "fetch_from": "billing_marsha.property_name",
+   "fieldname": "property_name",
+   "fieldtype": "Data",
+   "label": "Property Name"
+  }
+ ],
+ "hide_toolbar": 1,
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2023-10-11 11:36:39.480963",
+ "modified_by": "Administrator",
+ "module": "Revenue Management",
+ "name": "Team Roster",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1
+}

@@ -1,0 +1,107 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "field:marsha",
+ "creation": "2023-10-10 17:35:52.996594",
+ "default_view": "List",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "marsha",
+  "property_name",
+  "cluster",
+  "region",
+  "city",
+  "column_break_a06m9",
+  "currency",
+  "area",
+  "sub_region",
+  "country"
+ ],
+ "fields": [
+  {
+   "fieldname": "marsha",
+   "fieldtype": "Data",
+   "label": "Marsha",
+   "reqd": 1,
+   "unique": 1
+  },
+  {
+   "fieldname": "property_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Property Name",
+   "reqd": 1
+  },
+  {
+   "fieldname": "currency",
+   "fieldtype": "Link",
+   "label": "Currency",
+   "options": "Currency"
+  },
+  {
+   "fieldname": "region",
+   "fieldtype": "Data",
+   "label": "Region"
+  },
+  {
+   "fieldname": "city",
+   "fieldtype": "Data",
+   "label": "City"
+  },
+  {
+   "fieldname": "cluster",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Cluster"
+  },
+  {
+   "fieldname": "column_break_a06m9",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "area",
+   "fieldtype": "Data",
+   "label": "Area"
+  },
+  {
+   "fieldname": "sub_region",
+   "fieldtype": "Data",
+   "label": "Sub Region"
+  },
+  {
+   "fieldname": "country",
+   "fieldtype": "Link",
+   "label": "Country",
+   "options": "Country"
+  }
+ ],
+ "hide_toolbar": 1,
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2023-10-11 11:27:49.526727",
+ "modified_by": "Administrator",
+ "module": "Revenue Management",
+ "name": "Marsha Details",
+ "naming_rule": "By fieldname",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1
+}

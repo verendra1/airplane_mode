@@ -1,0 +1,122 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2023-10-10 16:51:42.628375",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "cluster",
+  "approver_details_section",
+  "deployment_type",
+  "approve_order",
+  "column_break_dcmji",
+  "approver_types",
+  "marsha",
+  "employee_details_section",
+  "eid",
+  "email",
+  "column_break_rl2xp",
+  "name1"
+ ],
+ "fields": [
+  {
+   "fieldname": "marsha",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Marsha",
+   "options": "Marsha Details"
+  },
+  {
+   "fetch_from": "eid.email",
+   "fieldname": "email",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Email"
+  },
+  {
+   "fetch_from": "email.username",
+   "fieldname": "eid",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "EID",
+   "options": "Employees"
+  },
+  {
+   "fetch_from": "eid.name1",
+   "fieldname": "name1",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Name"
+  },
+  {
+   "fieldname": "approve_order",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Approve Order",
+   "options": "\n1\n2"
+  },
+  {
+   "fieldname": "column_break_dcmji",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "cluster",
+   "fieldtype": "Link",
+   "label": "Cluster",
+   "options": "RMRS Deployment"
+  },
+  {
+   "fieldname": "deployment_type",
+   "fieldtype": "Select",
+   "label": "Deployment Type",
+   "options": "\nCluster\nIndividual Property"
+  },
+  {
+   "fieldname": "approver_details_section",
+   "fieldtype": "Section Break",
+   "label": "Approver Details"
+  },
+  {
+   "fieldname": "approver_types",
+   "fieldtype": "Select",
+   "label": "Approver Types",
+   "options": "\nApprover\nViewer"
+  },
+  {
+   "fieldname": "employee_details_section",
+   "fieldtype": "Section Break",
+   "label": "Employee Details"
+  },
+  {
+   "fieldname": "column_break_rl2xp",
+   "fieldtype": "Column Break"
+  }
+ ],
+ "hide_toolbar": 1,
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2023-10-11 19:26:04.050743",
+ "modified_by": "Administrator",
+ "module": "Revenue Management",
+ "name": "Approvers",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1
+}
