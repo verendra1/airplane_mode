@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 ## Airplane Mode
 
 Assignment
