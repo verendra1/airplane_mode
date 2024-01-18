@@ -1,0 +1,10 @@
+<div>
+    <a href="{{ doc.route }}" class="card" style="width: 35rem;">
+      <div class="card-body" >
+     <h5 style="color:Blue;" class="card-title">{{ doc.airplane }}</h5>
+     <p {{ doc.source_airport_code}} -> {{ doc.destination_airport_code }}</p>
+     <p class="card-title">{{ doc.date_of_departure}} | {{ doc.time_of_departure }} | {{doc.duration }}</p>
+      <a  href=" {{ doc.route }}" class="btn btn-primary">View Flight</a>
+      </div>
+    </a>
+    </div>

@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+ <head>
+    <style>
+      .rectangle
+        {
+        width: 500px;
+        height: 250px;
+        padding: 20px;
+        margin: 20px;
+  background-color: {{ frappe.form_dict.color or "black" }};
+
+        }
+  </style>
+  </head>
+  <body>
+ <div class="rectangle" id="color-box">  </div>
+  </body>
+  </html>
